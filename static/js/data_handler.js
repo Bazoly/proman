@@ -20,6 +20,14 @@ export let dataHandler = {
         // it is not called from outside
         // sends the data to the API, and calls callback function
     },
+    _api_delete: function (url, callback) {
+        fetch(url, {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        })
+            .then(response => response.json())
+            .then(json_response => callback(json_response));
+    },
     init: function () {
     },
     getBoards: function (callback) {
