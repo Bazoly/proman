@@ -41,6 +41,14 @@ def delete_board(board_id):
     return 'Board deleted'
 
 
+@app.route('/card/<int:card_id>', methods='DELETE')
+@json_response
+def delete_board(card_id):
+    data_handler.delete_item_by_id('cards', card_id)
+
+    return 'Card deleted'
+
+
 def main():
     app.run(debug=True)
 
