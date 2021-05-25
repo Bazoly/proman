@@ -20,7 +20,7 @@ def get_boards():
     """
     All the boards
     """
-    return data_handler.get_boards()
+    return data_handler.get_boards_sql()
 
 
 @app.route("/get-cards/<int:board_id>")
