@@ -66,5 +66,10 @@ export let dataHandler = {
             callback(response)
         })
     },
+    deleteCard: function (cardId, callback) {
+        this._api_delete(`/delete/${cardId}`, (response) => {
+            callback(response)
+        })
+    },
     // here comes more features
 };
