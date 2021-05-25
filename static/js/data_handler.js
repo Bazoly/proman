@@ -60,6 +60,11 @@ export let dataHandler = {
     },
     createNewCard: function (cardTitle, boardId, statusId, callback) {
         // creates new card, saves it and calls the callback function with its data
-    }
+    },
+    deleteBoard: function (boardId, callback) {
+        this._api_delete(`/delete/${boardId}`, (response) => {
+            callback(response)
+        })
+    },
     // here comes more features
 };
