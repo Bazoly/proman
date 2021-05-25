@@ -1,4 +1,8 @@
-import persistence
+from psycopg2.extras import RealDictCursor
+from psycopg2 import sql
+from typing import List, Dict
+
+import database_common
 
 
 def get_card_status(status_id):
@@ -28,3 +32,14 @@ def get_cards_for_board(board_id):
             card['status_id'] = get_card_status(card['status_id'])  # Set textual status for the card
             matching_cards.append(card)
     return matching_cards
+
+
+@database_common.connection_handler
+def delete_item_by_id(cursor: RealDictCursor, table_name: str, id: int):
+    query = sql.SQL("""
+        DELETE  FROM    {table_name}
+        WHERE   id = %(id)s
+    """).format(
+        table_name=sql.Identifier(table_name)
+    )
+    cursor.execute(query, {'id': id})
