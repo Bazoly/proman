@@ -43,10 +43,18 @@ def delete_board(board_id):
 
 @app.route('/card/<int:card_id>', methods='DELETE')
 @json_response
-def delete_board(card_id):
+def delete_card(card_id):
     data_handler.delete_item_by_id('cards', card_id)
 
     return 'Card deleted'
+
+
+@app.route('/card/<int:column_id>', methods='DELETE')
+@json_response
+def delete_column(column_id):
+    data_handler.delete_item_by_id('statuses', column_id)
+
+    return 'Status deleted'
 
 
 def main():
