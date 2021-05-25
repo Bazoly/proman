@@ -71,5 +71,10 @@ export let dataHandler = {
             callback(response)
         })
     },
+    deleteColumn: function (columnId, callback) {
+        this._api_delete(`/delete/${columnId}`, (response) => {
+            callback(response)
+        })
+    },
     // here comes more features
 };
