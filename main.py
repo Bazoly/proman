@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 from util import json_response
 
 import data_handler
@@ -31,6 +31,14 @@ def get_cards_for_board(board_id: int):
     :param board_id: id of the parent board
     """
     return data_handler.get_cards_for_board(board_id)
+
+
+@app.route('/board/<int:board_id>', methods='DELETE')
+@json_response
+def delete_board(board_id):
+    data_handler.delete_item_by_id('boards', board_id)
+
+    return 'Board deleted'
 
 
 def main():
