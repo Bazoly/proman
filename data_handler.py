@@ -37,3 +37,12 @@ def get_boards_sql(cursor: RealDictCursor):
     query = 'SELECT id, title from boards'
     cursor.execute(query)
     return cursor.fetchall()
+
+
+@database_common.connection_handler
+def create_new_board(cursor: RealDictCursor, boardTitle) -> list:
+    query = """
+    INSERT INTO board(title)
+    VALUES (%s)
+    """
+    cursor.execute(query, [boardTitle])

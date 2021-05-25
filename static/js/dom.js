@@ -14,6 +14,10 @@ export let dom = {
     showBoards: function (boards) {
         // shows boards appending them to #boards div
         // it adds necessary event listeners also
+        let newBoardButton = document.getElementById("boards")
+        const createNewBoardButton = `<button id="new-board">Create New Board</button>`;
+        newBoardButton.insertAdjacentHTML("beforebegin", createNewBoardButton);
+        dom.createNewBoard();
 
         let boardList = '';
 
@@ -33,6 +37,12 @@ export let dom = {
 
         let boardsContainer = document.querySelector('#boards');
         boardsContainer.innerHTML = boardList;
+    },
+    createNewBoard: function () {
+        let newBoard = document.getElementById("new-board")
+        newBoard.addEventListener("click", function() {
+            dataHandler.createNewBoard("kolbász");
+        })
     },
     loadCards: function (boardId) {
         // retrieves cards and makes showCards called
