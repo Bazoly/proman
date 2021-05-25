@@ -50,13 +50,17 @@ INSERT INTO boards VALUES (1, 'Board 1');
 INSERT INTO boards VALUES (2, 'Board 2');
 SELECT pg_catalog.setval('boards_id_seq', 2, true);
 
-INSERT INTO statuses VALUES (0, NULL, 'new');
-INSERT INTO statuses VALUES (1, NULL, 'in progress');
-INSERT INTO statuses VALUES (2, NULL, 'testing');
-INSERT INTO statuses VALUES (3, NULL, 'done');
-INSERT INTO statuses VALUES (4, 1, 'test delete status 1');
-INSERT INTO statuses VALUES (5, 2, 'test delete status 2');
-SELECT pg_catalog.setval('statuses_id_seq', 5, true);
+INSERT INTO statuses VALUES (0, 1, 'new');
+INSERT INTO statuses VALUES (1, 1, 'in progress');
+INSERT INTO statuses VALUES (2, 1, 'testing');
+INSERT INTO statuses VALUES (3, 1, 'done');
+INSERT INTO statuses VALUES (4, 2, 'new');
+INSERT INTO statuses VALUES (5, 2, 'in progress');
+INSERT INTO statuses VALUES (6, 2, 'testing');
+INSERT INTO statuses VALUES (7, 2, 'done');
+INSERT INTO statuses VALUES (8, 1, 'test delete status 1');
+INSERT INTO statuses VALUES (9, 2, 'test delete status 2');
+SELECT pg_catalog.setval('statuses_id_seq', 9, true);
 
 INSERT INTO cards VALUES (1, 1, 'new card 1', 0, 0);
 INSERT INTO cards VALUES (2, 1, 'new card 2', 0, 1);
