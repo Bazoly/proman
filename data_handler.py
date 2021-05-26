@@ -1,5 +1,7 @@
-import persistence
 from psycopg2.extras import RealDictCursor
+from psycopg2 import sql
+from typing import List, Dict
+
 import database_common
 
 
@@ -28,14 +30,6 @@ def get_cards_for_board(cursor: RealDictCursor, column_id):
     return cursor.fetchall()
 
 
-
-@database_common.connection_handler
-def get_boards_sql(cursor: RealDictCursor):
-    query = f'SELECT id, title from boards'
-    cursor.execute(query)
-    return cursor.fetchall()
-
-
 @database_common.connection_handler
 def get_boards_sql(cursor: RealDictCursor):
     query = 'SELECT id, title from boards'
@@ -57,3 +51,14 @@ def get_statuses(cursor: RealDictCursor, board_id):
     query = 'SELECT id, title FROM statuses WHERE board_id= (%(board_id)s)'
     cursor.execute(query, {'board_id': board_id})
     return cursor.fetchall()
+
+
+@database_common.connection_handler
+def delete_item_by_id(cursor: RealDictCursor, table_name: str, id: int):
+    query = sql.SQL("""
+        DELETE  FROM    {table_name}
+        WHERE   id = %(id)s
+    """).format(
+        table_name=sql.Identifier(table_name)
+    )
+    cursor.execute(query, {'id': id})
