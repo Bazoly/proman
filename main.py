@@ -45,8 +45,9 @@ def get_cards_for_board(column_id: int):
 @json_response
 def create_board():
     board_name = request.get_json()['boardTitle']
-    print(board_name)
     data_handler.create_new_board(board_name)
+    board_id = data_handler.get_board_id()
+    data_handler.append_status_columns(board_id)
     return "New board created"
 
 

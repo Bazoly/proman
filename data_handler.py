@@ -49,3 +49,23 @@ def get_statuses(cursor: RealDictCursor, board_id):
     query = 'SELECT id, title FROM statuses WHERE board_id= (%(board_id)s) ORDER BY id ASC'
     cursor.execute(query, {'board_id': board_id})
     return cursor.fetchall()
+
+
+@database_common.connection_handler
+def append_status_columns(cursor: RealDictCursor, board_id):
+    query = """
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'new');
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'in progress');
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'testing');
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'done');
+    """
+    cursor.execute(query, {'board_id': board_id})
+
+
+@database_common.connection_handler
+def get_board_id(cursor: RealDictCursor):
+    query = """
+    SELECT MAX(id) FROM boards;
+    """
+    cursor.execute(query)
+    return cursor.fetchone()['max']
