@@ -4,6 +4,7 @@ import { dataHandler } from "./data_handler.js";
 export let dom = {
     init: function () {
         // This function should run once, when the page is loaded.
+        dom.loadBoards();
     },
     loadBoards: function () {
         // retrieves boards and makes showBoards called
@@ -137,7 +138,7 @@ export let dom = {
         let showCard = ""
         for (let card of cards){
             showCard += `
-                        <div class="card">
+                        <div class="card" id="card-${card.id}" draggable="true">
                             <div class="card-remove" id="delete-card-${card.id}"><i class="fas fa-trash-alt"></i></div>
                             <div class="card-title">${card.title}</div>
                         </div>            `
@@ -148,6 +149,7 @@ export let dom = {
         for (let deleteBtn of deleteCardButtons) {
             deleteBtn.addEventListener('click', dom.initDeleteCard);
         }
+        dom.initDragAndDrop();
 
     },
     initDeleteCard: function (event) {
@@ -161,6 +163,49 @@ export let dom = {
             })
         } else {
             console.log('Card is not deleted')
+        }
+    },
+
+    initDragAndDrop: function () {
+        const draggableCards = document.querySelectorAll('.card');
+        const cardContainers = document.querySelectorAll('.board-column-content');
+
+        draggableCards.forEach(draggableCard => {
+            draggableCard.addEventListener('dragstart', () => {
+                draggableCard.classList.add('dragging')
+            })
+
+            draggableCard.addEventListener('dragend', () => {
+                draggableCard.classList.remove('dragging')
+            })
+        })
+
+        cardContainers.forEach(column => {
+            column.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                const afterElement = getDragAfterElement(column, event.clientY);
+                console.log(afterElement)
+                const draggedCard = document.querySelector('.dragging');
+                if (afterElement == null) {
+                    column.appendChild(draggedCard);
+                } else {
+                    column.insertBefore(draggedCard, afterElement)
+                }
+            })
+        })
+
+        function getDragAfterElement(container, y) {
+            const draggableCards = [...container.querySelectorAll('.card:not(.dragging)')]
+
+            return draggableCards.reduce((closestElement, containerChild) => {
+                const card = containerChild.getBoundingClientRect();
+                const offset = y - card.top - card.height / 2;
+                if (offset < 0 && offset > closestElement.offset) {
+                    return { offset: offset, element: containerChild}
+                } else {
+                    return closestElement
+                }
+            }, {offset: Number.NEGATIVE_INFINITY}).element
         }
     }
     // here comes more features
