@@ -35,9 +35,10 @@ export let dom = {
                 <button class="board-add" id="board-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
                 <button class="board-delete" id="board-${board.id}"><i class="fa fa-trash"></i></button>
-                <div class="board-columns" id="column-${board.id}"></div>
+             
                 
             </div>
+            <div class="board-columns" id="column-${board.id}"></div>
         
         </section>
             `;
@@ -68,24 +69,37 @@ export let dom = {
             column += `
                 <div class="board-column">
                     <div class="board-column-title">${status.title}</div>
-                    <div class="board-column-content"></div>
+                    <div class="board-column-content" id="cardholder-${status.id}"></div>
                     </div>
                 `
         }
             let stasusContainer = document.getElementById('column-' + board_id);
             stasusContainer.innerHTML = column;
-
+        for(let status of statuses) {
+            this.loadCards(status.id)
+        }
 
     },
 
-    loadCards: function (boardId) {
+    loadCards: function (column_id) {
         // retrieves cards and makes showCards called
-        dataHandler.getCardsByBoardId(boardId, cards)
-        dom.showCards(cards)
+        dataHandler.getCardsByBoardId(column_id, function (cards){
+        dom.showCards(cards, column_id)
+        });
     },
-    showCards: function (cards) {
+    showCards: function (cards, column_id) {
         // shows the cards of a board
         // it adds necessary event listeners also
+        let showCard = ""
+        for (let card of cards){
+            showCard += `
+                        <div class="card">
+                            <div class="card-remove"><i class="fas fa-trash-alt"></i></div>
+                            <div class="card-title">${card.title}</div>
+                        </div>            `
+        }
+        let cardContainer = document.getElementById("cardholder-"+column_id)
+        cardContainer.innerHTML = showCard;
     },
     // here comes more features
 };
