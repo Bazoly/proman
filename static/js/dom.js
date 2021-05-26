@@ -32,7 +32,7 @@ export let dom = {
         for(let board of boards){
             boardList += `
         <section class="board" id="section-board-${board.id}">
-            <div class="board-header" id="board-${board.id}"><span class="board-title" id="board-${board.id}">${board.title}</span>
+            <div class="board-header" id="boardheader-${board.id}"><span class="board-title" id="boardtitle-${board.id}">${board.title}</span>
                 <button class="board-add" id="board-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
                 <button class="board-delete" id="board-${board.id}"><i class="fa fa-trash"></i></button>
@@ -50,12 +50,38 @@ export let dom = {
         for(let board of boards) {
             this.loadStatuses(board.id)
         }
+        for(let board of boards) {
+            let boardTitle = document.getElementById(`boardtitle-${board.id}`)
+            boardTitle.addEventListener('click', () => {
+                dom.renameBoard(board.id, board.title)
+            })
+        }
 
     },
     createNewBoard: function () {
         const newBoardTitle = "New Board";
         dataHandler.createNewBoard(newBoardTitle);
         dom.loadBoards()
+    },
+
+    renameBoard: function (id, title) {
+      let boardTitle = document.getElementById(`boardtitle-${id}`) ;
+      boardTitle.addEventListener('click', ()=> {
+            let boardDiv = document.getElementById(`boardheader-${id}`);
+            boardDiv.removeChild(boardTitle);
+            boardTitle = `<input class="board-title" id="title-${id}" value="${title}" maxlength="16">`;
+            boardDiv.insertAdjacentHTML("afterbegin", boardTitle);
+            let inputField = document.getElementById(`title-${id}`);
+            inputField.addEventListener('focusout', () => {
+                let title = document.getElementById(`title-${id}`).value;
+                if (title === '') {
+                    title = 'unnamed'
+                }
+                let data = {"title": title, "board_id": id};
+                dataHandler.renameBoard(id, data);
+            })
+      })
+
     },
 
     //STATUS FUNCTIONS

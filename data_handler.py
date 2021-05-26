@@ -69,3 +69,12 @@ def get_board_id(cursor: RealDictCursor):
     """
     cursor.execute(query)
     return cursor.fetchone()['max']
+
+
+@database_common.connection_handler
+def rename_board(cursor: RealDictCursor, title, board_id):
+    query = '''
+    UPDATE boards
+    SET title = %(title)s
+    WHERE id = %(id)s'''
+    cursor.execute(query, {"title": title, "id": board_id})

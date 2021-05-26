@@ -51,6 +51,13 @@ def create_board():
     return "New board created"
 
 
+@app.route("/rename/<int:board_id>", methods=["POST"])
+def rename_board(board_id):
+    title = request.get_json()['title']
+
+    data_handler.rename_board(title, board_id)
+
+
 def main():
     app.run(debug=True, port=5000)
 
