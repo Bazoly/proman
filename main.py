@@ -38,13 +38,14 @@ def get_cards_for_board(board_id: int):
 @app.route("/create-boards", methods=["POST"])
 @json_response
 def create_board():
-    board_name = json.load(request.data)
+    board_name = request.get_json()['boardTitle']
+    print(board_name)
     data_handler.create_new_board(board_name)
     return "New board created"
 
 
 def main():
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
 
     # Serving the favicon
     with app.app_context():

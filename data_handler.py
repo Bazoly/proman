@@ -34,6 +34,13 @@ def get_cards_for_board(board_id):
 
 @database_common.connection_handler
 def get_boards_sql(cursor: RealDictCursor):
+    query = f'SELECT id, title from boards'
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_boards_sql(cursor: RealDictCursor):
     query = 'SELECT id, title from boards'
     cursor.execute(query)
     return cursor.fetchall()
@@ -42,7 +49,7 @@ def get_boards_sql(cursor: RealDictCursor):
 @database_common.connection_handler
 def create_new_board(cursor: RealDictCursor, board_name):
     query = """
-    INSERT INTO boards
-    VALUES %s
+    INSERT INTO boards (title)
+    VALUES (%(board_name)s)
     """
-    cursor.execute(query, board_name)
+    cursor.execute(query, {'board_name': board_name})
