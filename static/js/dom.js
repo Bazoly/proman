@@ -12,9 +12,11 @@ export let dom = {
         });
     },
     showBoards: function (boards) {
+
         // shows boards appending them to #boards div
         // it adds necessary event listeners also
         let boardContainer = document.getElementById("boards")
+        boardContainer.innerHTML = null
         const createNewBoardButton = document.createElement("button");
         createNewBoardButton.appendChild(document.createTextNode("Create New Board"));
         createNewBoardButton.setAttribute("id", "new-board");
@@ -46,6 +48,7 @@ export let dom = {
     createNewBoard: function () {
         const newBoardTitle = "New Board";
         dataHandler.createNewBoard(newBoardTitle);
+        dom.loadBoards()
     },
     loadCards: function (boardId) {
         // retrieves cards and makes showCards called
