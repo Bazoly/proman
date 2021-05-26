@@ -21,7 +21,9 @@ def get_boards():
     return persistence.get_boards(force=True)
 
 
+@database_common.connection_handler
 def get_cards_for_board(board_id):
+
     persistence.clear_cache()
     all_cards = persistence.get_cards()
     matching_cards = []
@@ -53,3 +55,10 @@ def create_new_board(cursor: RealDictCursor, board_name):
     VALUES (%(board_name)s)
     """
     cursor.execute(query, {'board_name': board_name})
+
+
+@database_common.connection_handler
+def get_statuses(cursor: RealDictCursor, board_id):
+    query = 'SELECT id, title FROM statuses WHERE board_id= (%(board_id)s)'
+    cursor.execute(query, {'board_id': board_id})
+    return cursor.fetchall()
