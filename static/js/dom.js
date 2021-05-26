@@ -4,17 +4,6 @@ import { dataHandler } from "./data_handler.js";
 export let dom = {
     init: function () {
         // This function should run once, when the page is loaded.
-    },
-    loadBoards: function () {
-        // retrieves boards and makes showBoards called
-        dataHandler.getBoards(function(boards){
-            dom.showBoards(boards);
-        });
-    },
-    showBoards: function (boards) {
-
-        // shows boards appending them to #boards div
-        // it adds necessary event listeners also
         let boardContainer = document.getElementById("boards")
         boardContainer.innerHTML = null
         const createNewBoardButton = document.createElement("button");
@@ -24,6 +13,18 @@ export let dom = {
         body.insertBefore(createNewBoardButton, boardContainer);
         let newBoard = document.getElementById("new-board")
         newBoard.addEventListener("click", this.createNewBoard );
+    },
+
+    // BOARD FUNCTIONS
+
+    loadBoards: function () {
+        // retrieves boards and makes showBoards called
+        dataHandler.getBoards(function(boards){
+            dom.showBoards(boards);
+        });
+    },
+    showBoards: function (boards) {
+
 
 
         let boardList = '';
@@ -56,6 +57,9 @@ export let dom = {
         dataHandler.createNewBoard(newBoardTitle);
         dom.loadBoards()
     },
+
+    //STATUS FUNCTIONS
+
     loadStatuses: function (board_id) {
         dataHandler.getStatuses(board_id, function (statuses) {
             dom.showStatuses(statuses, board_id)
@@ -80,6 +84,8 @@ export let dom = {
         }
 
     },
+
+    // CARD FUNCTIONS
 
     loadCards: function (column_id) {
         // retrieves cards and makes showCards called
