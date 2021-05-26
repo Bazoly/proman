@@ -64,6 +64,7 @@ export let dom = {
         if (confirm(`Are you sure you want to delete this board?`)) {
             dataHandler.deleteBoard(boardId, (response) => {
                 console.log(response);
+                dom.loadBoards();
             })
         } else {
             console.log('Board is not deleted')
@@ -117,6 +118,7 @@ export let dom = {
         if (confirm(`Are you sure you want to delete this column?`)) {
             dataHandler.deleteColumn(columnId, (response) => {
                 console.log(response);
+                dom.loadBoards();
             })
         } else {
             console.log('Column is not deleted')
@@ -155,6 +157,7 @@ export let dom = {
         if (confirm(`Are you sure you want to delete this card?`)) {
             dataHandler.deleteCard(cardId, (response) => {
                 console.log(response);
+                dom.loadBoards();
             })
         } else {
             console.log('Card is not deleted')
