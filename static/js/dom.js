@@ -30,13 +30,15 @@ export let dom = {
 
         for(let board of boards){
             boardList += `
-        <section class="board" id="board-${board.id}">
+        <section class="board" id="section-board-${board.id}">
             <div class="board-header" id="board-${board.id}"><span class="board-title" id="board-${board.id}">${board.title}</span>
                 <button class="board-add" id="board-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
                 <button class="board-delete" id="board-${board.id}"><i class="fa fa-trash"></i></button>
+             
                 
             </div>
+            <div class="board-columns" id="column-${board.id}"></div>
         
         </section>
             `;
@@ -44,18 +46,60 @@ export let dom = {
 
         let boardsContainer = document.querySelector('#boards');
         boardsContainer.innerHTML = boardList;
+        for(let board of boards) {
+            this.loadStatuses(board.id)
+        }
+
     },
     createNewBoard: function () {
         const newBoardTitle = "New Board";
         dataHandler.createNewBoard(newBoardTitle);
         dom.loadBoards()
     },
-    loadCards: function (boardId) {
-        // retrieves cards and makes showCards called
+    loadStatuses: function (board_id) {
+        dataHandler.getStatuses(board_id, function (statuses) {
+            dom.showStatuses(statuses, board_id)
+        });
+
+
     },
-    showCards: function (cards) {
+    showStatuses: function (statuses, board_id) {
+        let column = ''
+        for (let status of statuses) {
+            column += `
+                <div class="board-column">
+                    <div class="board-column-title">${status.title}</div>
+                    <div class="board-column-content" id="cardholder-${status.id}"></div>
+                    </div>
+                `
+        }
+            let stasusContainer = document.getElementById('column-' + board_id);
+            stasusContainer.innerHTML = column;
+        for(let status of statuses) {
+            this.loadCards(status.id)
+        }
+
+    },
+
+    loadCards: function (column_id) {
+        // retrieves cards and makes showCards called
+        dataHandler.getCardsByBoardId(column_id, function (cards){
+        dom.showCards(cards, column_id)
+        });
+    },
+    showCards: function (cards, column_id) {
         // shows the cards of a board
         // it adds necessary event listeners also
+        let showCard = ""
+        for (let card of cards){
+            showCard += `
+                        <div class="card">
+                            <div class="card-remove"><i class="fas fa-trash-alt"></i></div>
+                            <div class="card-title">${card.title}</div>
+                        </div>            `
+        }
+        let cardContainer = document.getElementById("cardholder-"+column_id)
+        cardContainer.innerHTML = showCard;
     },
     // here comes more features
 };
