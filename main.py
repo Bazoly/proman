@@ -71,7 +71,7 @@ def delete_card(card_id):
 def delete_column(column_id):
     data_handler.delete_item_by_id('statuses', column_id)
 
-    return 'Status deleted'
+    return 'Column deleted'
 
 
 def main():

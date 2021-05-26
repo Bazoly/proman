@@ -46,10 +46,12 @@ export let dom = {
 
         let boardsContainer = document.querySelector('#boards');
         boardsContainer.innerHTML = boardList;
+
         let deleteBoardButtons = document.getElementsByClassName("board-delete");
         for (let deleteBtn of deleteBoardButtons) {
             deleteBtn.addEventListener('click', dom.initDeleteBoard);
         }
+
         for(let board of boards) {
             this.loadStatuses(board.id)
         }
@@ -85,17 +87,40 @@ export let dom = {
         for (let status of statuses) {
             column += `
                 <div class="board-column">
-                    <div class="board-column-title">${status.title}</div>
+                    <div class="board-column-title">
+                        ${status.title}
+                        <button class="column-delete" id="delete-column-${status.id}"><i class="fa fa-trash"></i></button>
+                    </div>
                     <div class="board-column-content" id="cardholder-${status.id}"></div>
+                    
                     </div>
                 `
         }
-            let stasusContainer = document.getElementById('column-' + board_id);
-            stasusContainer.innerHTML = column;
+            let statusContainer = document.getElementById('column-' + board_id);
+            statusContainer.innerHTML = column;
+
+        let deleteColumnButtons = document.getElementsByClassName("column-delete");
+        for (let deleteBtn of deleteColumnButtons) {
+            deleteBtn.addEventListener('click', dom.initDeleteColumn);
+        }
+
         for(let status of statuses) {
             this.loadCards(status.id)
         }
 
+    },
+
+    initDeleteColumn: function (event) {
+        event.preventDefault();
+        const idIndex = 2;
+        let columnId = event.currentTarget.id.split('-')[idIndex];
+        if (confirm(`Are you sure you want to delete this column?`)) {
+            dataHandler.deleteColumn(columnId, (response) => {
+                console.log(response);
+            })
+        } else {
+            console.log('Column is not deleted')
+        }
     },
 
     loadCards: function (column_id) {
