@@ -12,25 +12,43 @@ export let dom = {
         });
     },
     showBoards: function (boards) {
+
         // shows boards appending them to #boards div
         // it adds necessary event listeners also
+        let boardContainer = document.getElementById("boards")
+        boardContainer.innerHTML = null
+        const createNewBoardButton = document.createElement("button");
+        createNewBoardButton.appendChild(document.createTextNode("Create New Board"));
+        createNewBoardButton.setAttribute("id", "new-board");
+        let body = document.querySelector("body");
+        body.insertBefore(createNewBoardButton, boardContainer);
+        let newBoard = document.getElementById("new-board")
+        newBoard.addEventListener("click", this.createNewBoard );
+
 
         let boardList = '';
 
         for(let board of boards){
             boardList += `
-                <li>${board.title}</li>
+        <section class="board" id="board-${board.id}">
+            <div class="board-header" id="board-${board.id}"><span class="board-title" id="board-${board.id}">${board.title}</span>
+                <button class="board-add" id="board-${board.id}">Add Card</button>
+                <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
+                <button class="board-delete" id="board-${board.id}"><i class="fa fa-trash"></i></button>
+                
+            </div>
+        
+        </section>
             `;
         }
 
-        const outerHtml = `
-            <ul class="board-container">
-                ${boardList}
-            </ul>
-        `;
-
         let boardsContainer = document.querySelector('#boards');
-        boardsContainer.insertAdjacentHTML("beforeend", outerHtml);
+        boardsContainer.innerHTML = boardList;
+    },
+    createNewBoard: function () {
+        const newBoardTitle = "New Board";
+        dataHandler.createNewBoard(newBoardTitle);
+        dom.loadBoards()
     },
     loadCards: function (boardId) {
         // retrieves cards and makes showCards called
