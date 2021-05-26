@@ -40,9 +40,9 @@ def get_boards_sql(cursor: RealDictCursor):
 
 
 @database_common.connection_handler
-def create_new_board(cursor: RealDictCursor, boardTitle) -> list:
+def create_new_board(cursor: RealDictCursor, board_name):
     query = """
-    INSERT INTO board(title)
-    VALUES (%s)
+    INSERT INTO boards
+    VALUES %s
     """
-    cursor.execute(query, [boardTitle])
+    cursor.execute(query, board_name)
