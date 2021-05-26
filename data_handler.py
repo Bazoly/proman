@@ -30,7 +30,6 @@ def get_cards_for_board(cursor: RealDictCursor, column_id):
     return cursor.fetchall()
 
 
-
 @database_common.connection_handler
 def get_boards_sql(cursor: RealDictCursor):
     query = 'SELECT id, title from boards'

@@ -34,7 +34,7 @@ export let dom = {
             <div class="board-header" id="board-${board.id}"><span class="board-title" id="board-${board.id}">${board.title}</span>
                 <button class="board-add" id="board-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
-                <button class="board-delete" id="board-${board.id}"><i class="fa fa-trash"></i></button>
+                <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
              
                 
             </div>
@@ -46,11 +46,28 @@ export let dom = {
 
         let boardsContainer = document.querySelector('#boards');
         boardsContainer.innerHTML = boardList;
+        let deleteButtons = document.getElementsByClassName("board-delete");
+        for (let deleteBtn of deleteButtons) {
+            deleteBtn.addEventListener('click', dom.initDeleteBoard);
+        }
         for(let board of boards) {
             this.loadStatuses(board.id)
         }
 
     },
+    initDeleteBoard: function (event) {
+        event.preventDefault();
+        const idIndex = 2;
+        let boardId = event.currentTarget.id.split('-')[idIndex];
+        if (confirm(`Are you sure you want to delete this board?`)) {
+            dataHandler.deleteBoard(boardId, (response) => {
+                console.log(response);
+            })
+        } else {
+            console.log('Board is not deleted')
+        }
+    },
+
     createNewBoard: function () {
         const newBoardTitle = "New Board";
         dataHandler.createNewBoard(newBoardTitle);

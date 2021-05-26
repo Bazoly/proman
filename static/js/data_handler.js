@@ -82,17 +82,17 @@ export let dataHandler = {
         // creates new card, saves it and calls the callback function with its data
     },
     deleteBoard: function (boardId, callback) {
-        this._api_delete(`/delete/${boardId}`, (response) => {
+        this._api_delete(`/board/${boardId}`, (response) => {
             callback(response)
         })
     },
     deleteCard: function (cardId, callback) {
-        this._api_delete(`/delete/${cardId}`, (response) => {
+        this._api_delete(`/card/${cardId}`, (response) => {
             callback(response)
         })
     },
     deleteColumn: function (columnId, callback) {
-        this._api_delete(`/delete/${columnId}`, (response) => {
+        this._api_delete(`/column/${columnId}`, (response) => {
             callback(response)
         })
     },
