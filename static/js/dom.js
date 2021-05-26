@@ -46,8 +46,8 @@ export let dom = {
 
         let boardsContainer = document.querySelector('#boards');
         boardsContainer.innerHTML = boardList;
-        let deleteButtons = document.getElementsByClassName("board-delete");
-        for (let deleteBtn of deleteButtons) {
+        let deleteBoardButtons = document.getElementsByClassName("board-delete");
+        for (let deleteBtn of deleteBoardButtons) {
             deleteBtn.addEventListener('click', dom.initDeleteBoard);
         }
         for(let board of boards) {
@@ -111,12 +111,29 @@ export let dom = {
         for (let card of cards){
             showCard += `
                         <div class="card">
-                            <div class="card-remove"><i class="fas fa-trash-alt"></i></div>
+                            <div class="card-remove" id="delete-card-${card.id}"><i class="fas fa-trash-alt"></i></div>
                             <div class="card-title">${card.title}</div>
                         </div>            `
         }
         let cardContainer = document.getElementById("cardholder-"+column_id)
         cardContainer.innerHTML = showCard;
+        let deleteCardButtons = document.getElementsByClassName("card-remove");
+        for (let deleteBtn of deleteCardButtons) {
+            deleteBtn.addEventListener('click', dom.initDeleteCard);
+        }
+
     },
+    initDeleteCard: function (event) {
+        event.preventDefault();
+        const idIndex = 2;
+        let cardId = event.currentTarget.id.split('-')[idIndex];
+        if (confirm(`Are you sure you want to delete this card?`)) {
+            dataHandler.deleteCard(cardId, (response) => {
+                console.log(response);
+            })
+        } else {
+            console.log('Card is not deleted')
+        }
+    }
     // here comes more features
 };

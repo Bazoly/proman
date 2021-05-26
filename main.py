@@ -66,7 +66,7 @@ def delete_card(card_id):
     return 'Card deleted'
 
 
-@app.route('/card/<int:column_id>', methods=['DELETE'])
+@app.route('/column/<int:column_id>', methods=['DELETE'])
 @json_response
 def delete_column(column_id):
     data_handler.delete_item_by_id('statuses', column_id)
