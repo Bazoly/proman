@@ -3,6 +3,8 @@ from psycopg2 import sql
 from typing import List, Dict
 
 import database_common
+import persistence
+
 
 
 def get_card_status(status_id):
@@ -32,6 +34,22 @@ def get_cards_for_board(board_id):
             card['status_id'] = get_card_status(card['status_id'])  # Set textual status for the card
             matching_cards.append(card)
     return matching_cards
+
+
+@database_common.connection_handler
+def get_boards_sql(cursor: RealDictCursor):
+    query = 'SELECT id, title from boards'
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def create_new_board(cursor: RealDictCursor, board_name):
+    query = """
+    INSERT INTO boards (title)
+    VALUES (%(board_name)s)
+    """
+    cursor.execute(query, {'board_name': board_name})
 
 
 @database_common.connection_handler

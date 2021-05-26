@@ -1,6 +1,8 @@
 from flask import Flask, render_template, url_for, request
 from util import json_response
 
+import json
+
 import data_handler
 
 app = Flask(__name__)
@@ -20,7 +22,7 @@ def get_boards():
     """
     All the boards
     """
-    return data_handler.get_boards()
+    return data_handler.get_boards_sql()
 
 
 @app.route("/get-cards/<int:board_id>")
@@ -31,6 +33,15 @@ def get_cards_for_board(board_id: int):
     :param board_id: id of the parent board
     """
     return data_handler.get_cards_for_board(board_id)
+
+
+@app.route("/create-boards", methods=["POST"])
+@json_response
+def create_board():
+    board_name = request.get_json()['boardTitle']
+    print(board_name)
+    data_handler.create_new_board(board_name)
+    return "New board created"
 
 
 @app.route('/board/<int:board_id>', methods='DELETE')
