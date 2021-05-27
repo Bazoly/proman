@@ -29,6 +29,14 @@ export let dataHandler = {
         .then(response => response.json())  // parse the response as JSON
         .then(json_response => callback(json_response));  // Call the `callback` with the returned object
     },
+    _api_delete: function (url, callback) {
+        fetch(url, {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        })
+            .then(response => response.json())
+            .then(json_response => callback(json_response));
+    },
     init: function () {
     },
     getBoards: function (callback) {
@@ -76,6 +84,22 @@ export let dataHandler = {
             callback(response)
         })
         // creates new card, saves it and calls the callback function with its data
+    },
+    },
+    deleteBoard: function (boardId, callback) {
+        this._api_delete(`/board/${boardId}`, (response) => {
+            callback(response)
+        })
+    },
+    deleteCard: function (cardId, callback) {
+        this._api_delete(`/card/${cardId}`, (response) => {
+            callback(response)
+        })
+    },
+    deleteColumn: function (columnId, callback) {
+        this._api_delete(`/column/${columnId}`, (response) => {
+            callback(response)
+        })
     },
     // here comes more features
     renameBoard: function (board_id, data, callback){

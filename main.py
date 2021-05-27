@@ -51,6 +51,30 @@ def create_board():
     return "New board created"
 
 
+@app.route('/board/<int:board_id>', methods=['DELETE'])
+@json_response
+def delete_board(board_id):
+    data_handler.delete_item_by_id('boards', board_id)
+
+    return 'Board deleted'
+
+
+@app.route('/card/<int:card_id>', methods=['DELETE'])
+@json_response
+def delete_card(card_id):
+    data_handler.delete_item_by_id('cards', card_id)
+
+    return 'Card deleted'
+
+
+@app.route('/column/<int:column_id>', methods=['DELETE'])
+@json_response
+def delete_column(column_id):
+    data_handler.delete_item_by_id('statuses', column_id)
+
+    return 'Column deleted'
+
+
 @app.route("/create-card", methods=["POST"])
 @json_response
 def create_card():
