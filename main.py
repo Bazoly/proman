@@ -51,6 +51,14 @@ def create_board():
     return "New board created"
 
 
+@app.route("/create-card", methods=["POST"])
+@json_response
+def create_card():
+    data = request.get_json()['board_id']
+    column_id = data_handler.get_first_column(data)
+    data_handler.create_card(data, column_id)
+
+
 @app.route("/rename/<int:board_id>", methods=["POST"])
 def rename_board(board_id):
     title = request.get_json()['title']

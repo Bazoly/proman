@@ -30,7 +30,7 @@ def get_cards_for_board(cursor: RealDictCursor, column_id):
 
 @database_common.connection_handler
 def get_boards_sql(cursor: RealDictCursor):
-    query = 'SELECT id, title from boards'
+    query = 'SELECT id, title from boards ORDER BY id DESC'
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -78,3 +78,19 @@ def rename_board(cursor: RealDictCursor, title, board_id):
     SET title = %(title)s
     WHERE id = %(id)s'''
     cursor.execute(query, {"title": title, "id": board_id})
+
+
+@database_common.connection_handler
+def create_card(cursor: RealDictCursor, board_id, column_id):
+    query = '''
+    INSERT INTO cards (board_id, status_id, title)
+    VALUES (%(board_id)s, %(column_id)s, 'uwu owo')'''
+    cursor.execute(query, {"board_id": board_id, "column_id": column_id})
+    return None
+
+
+@database_common.connection_handler
+def get_first_column(cursor: RealDictCursor, board_id):
+    query = 'SELECT MIN(id) FROM statuses WHERE board_id = %(board_id)s'
+    cursor.execute(query, {'board_id': board_id} )
+    return cursor.fetchone()['min']
