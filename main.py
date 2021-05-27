@@ -105,6 +105,25 @@ def delete_column(column_id):
     return 'Column deleted'
 
 
+@app.route("/create-card", methods=["POST"])
+@json_response
+def create_card():
+    data = request.get_json()['board_id']
+    column_id = data_handler.get_first_column(data)
+    try:
+        order = (data_handler.get_last_order(column_id))+1
+    except TypeError:
+        order = 0
+    data_handler.create_card(data, column_id, order)
+
+
+@app.route("/rename/<int:board_id>", methods=["POST"])
+def rename_board(board_id):
+    title = request.get_json()['title']
+
+    data_handler.rename_board(title, board_id)
+
+
 def main():
     app.run(debug=True, port=5000)
 

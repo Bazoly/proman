@@ -13,8 +13,10 @@ export let dom = {
         body.insertBefore(createNewBoardButton, boardContainer);
         let newBoard = document.getElementById("new-board")
         newBoard.addEventListener("click", this.createNewBoard );
+
         setTimeout(dom.renameStatus, 1000)
         setTimeout(dom.renameCards, 1000)
+
     },
 
     // BOARD FUNCTIONS
@@ -35,7 +37,7 @@ export let dom = {
             boardList += `
         <section class="board" id="section-board-${board.id}">
             <div class="board-header" id="boardheader-${board.id}"><span class="board-title" id="boardtitle-${board.id}">${board.title}</span>
-                <button class="board-add" id="board-${board.id}">Add Card</button>
+                <button class="board-add" id="boardaddcard-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
                 <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
              
@@ -64,6 +66,14 @@ export let dom = {
                 dom.renameBoard(board.id, board.title)
             })
         }
+
+        for(let board of boards) {
+            let addcardbutton = document.getElementById(`boardaddcard-${board.id}`)
+            addcardbutton.addEventListener('click', () => {
+                dom.createCard(board.id)
+            })
+        }
+
 
     },
     initDeleteBoard: function (event) {
@@ -181,6 +191,8 @@ export let dom = {
         }
     },
 
+    // CARD FUNCTIONS
+
     loadCards: function (column_id) {
         // retrieves cards and makes showCards called
         dataHandler.getCardsByBoardId(column_id, function (cards){
@@ -240,5 +252,12 @@ export let dom = {
             console.log('Card is not deleted')
         }
     }
+    createCard: function (board_id){
+        dataHandler.createNewCard(board_id, function (cards) {
+            dom.loadCards();
+        })
+    }
+
+
     // here comes more features
 };

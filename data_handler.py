@@ -33,7 +33,7 @@ def get_cards_for_board(cursor: RealDictCursor, column_id):
 
 @database_common.connection_handler
 def get_boards_sql(cursor: RealDictCursor):
-    query = 'SELECT id, title from boards'
+    query = 'SELECT id, title from boards ORDER BY id DESC'
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -84,6 +84,28 @@ def rename_board(cursor: RealDictCursor, title, board_id):
 
 
 @database_common.connection_handler
+
+def create_card(cursor: RealDictCursor, board_id, column_id, order):
+    query = '''
+    INSERT INTO cards (board_id, status_id, title, "order")
+    VALUES (%(board_id)s, %(column_id)s, 'awesome new card', %(order)s)'''
+    cursor.execute(query, {"board_id": board_id, "column_id": column_id, 'order': order})
+    return None
+
+
+@database_common.connection_handler
+def get_first_column(cursor: RealDictCursor, board_id):
+    query = 'SELECT MIN(id) FROM statuses WHERE board_id = %(board_id)s'
+    cursor.execute(query, {'board_id': board_id} )
+    return cursor.fetchone()['min']
+
+
+@database_common.connection_handler
+def get_last_order(cursor: RealDictCursor, column_id):
+    query = 'SELECT MAX("order") FROM cards WHERE status_id= %(column_id)s'
+    cursor.execute(query, {'column_id': column_id})
+    return cursor.fetchone()['max']
+
 def rename_status(cursor: RealDictCursor, new_status, status_id):
     query = '''
     UPDATE statuses
@@ -99,6 +121,7 @@ def rename_card(cursor: RealDictCursor, new_card, card_id):
     SET title = %(new_card)s
     WHERE id = %(card_id)s'''
     cursor.execute(query, {"new_card": new_card, "card_id": card_id})
+
 
 
 @database_common.connection_handler
