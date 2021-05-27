@@ -102,7 +102,7 @@ export let dataHandler = {
             boardId: boardId,
             columnId: columnId,
         }
-        this._api_post(`/card/${cardId}/status`, data,(response) => {
+        this._api_post(`/card/${cardId}/position`, data,(response) => {
             callback(response)
         })
     }
