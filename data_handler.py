@@ -26,14 +26,14 @@ def get_boards():
 
 @database_common.connection_handler
 def get_cards_for_board(cursor: RealDictCursor, column_id):
-    query = 'SELECT id, title, "order" FROM cards WHERE status_id= (%(column_id)s)'
+    query = 'SELECT id, title, "order" FROM cards WHERE status_id= (%(column_id)s) ORDER BY "order" ASC'
     cursor.execute(query, {'column_id': column_id})
     return cursor.fetchall()
 
 
 @database_common.connection_handler
 def get_boards_sql(cursor: RealDictCursor):
-    query = 'SELECT id, title from boards ORDER BY id DESC'
+    query = 'SELECT id, title from boards ORDER BY id ASC'
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -84,7 +84,6 @@ def rename_board(cursor: RealDictCursor, title, board_id):
 
 
 @database_common.connection_handler
-
 def create_card(cursor: RealDictCursor, board_id, column_id, order):
     query = '''
     INSERT INTO cards (board_id, status_id, title, "order")
@@ -105,6 +104,7 @@ def get_last_order(cursor: RealDictCursor, column_id):
     query = 'SELECT MAX("order") FROM cards WHERE status_id= %(column_id)s'
     cursor.execute(query, {'column_id': column_id})
     return cursor.fetchone()['max']
+
 
 def rename_status(cursor: RealDictCursor, new_status, status_id):
     query = '''
