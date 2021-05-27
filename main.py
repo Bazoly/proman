@@ -74,7 +74,7 @@ def delete_column(column_id):
     return 'Column deleted'
 
 
-@app.route('/card/<int:card_id>', methods=['POST'])
+@app.route('/card/<int:card_id>/position', methods=['POST'])
 @json_response
 def new_card_position(card_id):
     board_id = request.get_json()['boardId']

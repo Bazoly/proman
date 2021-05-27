@@ -96,5 +96,16 @@ export let dataHandler = {
             callback(response)
         })
     },
+
+    newCardPosition: function (cardId, boardId, columnId, order, callback) {
+        let data = {
+            boardId: boardId,
+            columnId: columnId,
+            order: order
+        }
+        this._api_post(`/card/${cardId}/position`, data,(response) => {
+            callback(response)
+        })
+    }
     // here comes more features
 };
