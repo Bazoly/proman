@@ -1,3 +1,4 @@
+import persistence
 from psycopg2.extras import RealDictCursor
 from psycopg2 import sql
 from typing import List, Dict
@@ -48,9 +49,56 @@ def create_new_board(cursor: RealDictCursor, board_name):
 
 @database_common.connection_handler
 def get_statuses(cursor: RealDictCursor, board_id):
-    query = 'SELECT id, title FROM statuses WHERE board_id= (%(board_id)s)'
+    query = 'SELECT id, title FROM statuses WHERE board_id= (%(board_id)s) ORDER BY id ASC'
     cursor.execute(query, {'board_id': board_id})
     return cursor.fetchall()
+
+
+@database_common.connection_handler
+def append_status_columns(cursor: RealDictCursor, board_id):
+    query = """
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'new');
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'in progress');
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'testing');
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'done');
+    """
+    cursor.execute(query, {'board_id': board_id})
+
+
+@database_common.connection_handler
+def get_board_id(cursor: RealDictCursor):
+    query = """
+    SELECT MAX(id) FROM boards;
+    """
+    cursor.execute(query)
+    return cursor.fetchone()['max']
+
+
+@database_common.connection_handler
+def rename_board(cursor: RealDictCursor, title, board_id):
+    query = '''
+    UPDATE boards
+    SET title = %(title)s
+    WHERE id = %(id)s'''
+    cursor.execute(query, {"title": title, "id": board_id})
+
+
+@database_common.connection_handler
+def rename_status(cursor: RealDictCursor, new_status, status_id):
+    query = '''
+    UPDATE statuses
+    SET title = %(new_status)s
+    WHERE id = %(status_id)s'''
+    cursor.execute(query, {"new_status": new_status, "status_id": status_id})
+
+
+@database_common.connection_handler
+def rename_card(cursor: RealDictCursor, new_card, card_id):
+    query = '''
+    UPDATE cards
+    SET title = %(new_card)s
+    WHERE id = %(card_id)s'''
+    cursor.execute(query, {"new_card": new_card, "card_id": card_id})
 
 
 @database_common.connection_handler

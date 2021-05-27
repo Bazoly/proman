@@ -45,9 +45,40 @@ def get_cards_for_board(column_id: int):
 @json_response
 def create_board():
     board_name = request.get_json()['boardTitle']
-    print(board_name)
     data_handler.create_new_board(board_name)
+    board_id = data_handler.get_board_id()
+    data_handler.append_status_columns(board_id)
     return "New board created"
+
+
+@app.route("/rename/<int:board_id>", methods=["POST"])
+def rename_board(board_id):
+    title = request.get_json()['title']
+
+    data_handler.rename_board(title, board_id)
+
+
+@app.route("/column/<int:status_id>", methods=["POST"])
+@json_response
+def rename_status(status_id):
+    #status_id = request.get_json()["status_id"]
+    #
+    # print(status_id)
+    new_status = request.get_json()['title']
+    #status_id = data['status_id']
+    print(new_status)
+    data_handler.rename_status(new_status, status_id)
+
+    return "status renamed"
+
+
+@app.route("/card/<int:card_id>", methods=["POST"])
+@json_response
+def rename_card(card_id):
+    new_card = request.get_json()['title']
+    data_handler.rename_card(new_card, card_id)
+
+    return "card renamed"
 
 
 @app.route('/board/<int:board_id>', methods=['DELETE'])
@@ -75,7 +106,7 @@ def delete_column(column_id):
 
 
 def main():
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
 
     # Serving the favicon
     with app.app_context():
