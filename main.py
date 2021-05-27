@@ -69,7 +69,16 @@ def rename_status(status_id):
     print(new_status)
     data_handler.rename_status(new_status, status_id)
 
-    return "ok"
+    return "status renamed"
+
+
+@app.route("/card/<int:card_id>", methods=["POST"])
+@json_response
+def rename_card(card_id):
+    new_card = request.get_json()['title']
+    data_handler.rename_card(new_card, card_id)
+
+    return "card renamed"
 
 
 def main():

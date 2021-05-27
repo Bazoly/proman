@@ -87,3 +87,12 @@ def rename_status(cursor: RealDictCursor, new_status, status_id):
     SET title = %(new_status)s
     WHERE id = %(status_id)s'''
     cursor.execute(query, {"new_status": new_status, "status_id": status_id})
+
+
+@database_common.connection_handler
+def rename_card(cursor: RealDictCursor, new_card, card_id):
+    query = '''
+    UPDATE cards
+    SET title = %(new_card)s
+    WHERE id = %(card_id)s'''
+    cursor.execute(query, {"new_card": new_card, "card_id": card_id})

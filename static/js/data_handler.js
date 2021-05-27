@@ -83,5 +83,10 @@ export let dataHandler = {
         this._api_post("/column/"+status_id, data, (response) => {
             callback(response)
         });
+    },
+    renameCards: function (card_id, data, callback) {
+        this._api_post("/card/"+card_id, data, (response) => {
+            callback(response)
+        });
     }
 };

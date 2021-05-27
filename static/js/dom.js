@@ -14,6 +14,7 @@ export let dom = {
         let newBoard = document.getElementById("new-board")
         newBoard.addEventListener("click", this.createNewBoard );
         setTimeout(dom.renameStatus, 1000)
+        setTimeout(dom.renameCards, 1000)
     },
 
     // BOARD FUNCTIONS
@@ -113,8 +114,6 @@ export let dom = {
     },
     renameStatus: function () {
         let boardColumnTitles = document.getElementsByClassName("board-column-title")
-        // console.log(boardColumnTitles)
-        let counter = 0;
         for (let title of boardColumnTitles) {
             title.addEventListener("click", function (e) {
                 //console.log("click")
@@ -152,11 +151,30 @@ export let dom = {
             showCard += `
                         <div class="card">
                             <div class="card-remove"><i class="fas fa-trash-alt"></i></div>
-                            <div class="card-title">${card.title}</div>
+                            <div class="card-title" data-id="${card.id}">${card.title}</div>
                         </div>            `
         }
         let cardContainer = document.getElementById("cardholder-"+column_id)
         cardContainer.innerHTML = showCard;
     },
-    // here comes more features
+    renameCards: function () {
+        let cardTitles = document.getElementsByClassName("card-title");
+        console.log(cardTitles)
+        for (let cardTitle of cardTitles) {
+            cardTitle.addEventListener("click", function (e) {
+                e.target.contentEditable = true;
+                cardTitle.addEventListener("keydown", (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault()
+                        let renamedCard = cardTitle.innerHTML
+                        event.target.contentEditable = false;
+                        let cardId = event.target.dataset.id
+                        let data = {"title": renamedCard};
+                        console.log(data)
+                        dataHandler.renameCards(cardId, data, (response) => {console.log(response)})
+                    }
+                })
+            })
+        }
+    }
 };
