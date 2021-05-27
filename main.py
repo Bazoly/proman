@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, flash, redirect, session
 from util import json_response
 
+import os
 import json
 
 import data_handler
@@ -9,7 +10,7 @@ import password_hash
 
 app = Flask(__name__)
 
-app.secret_key = b'_5#y3L"F6Q9z\n\xec]/'
+app.secret_key = os.urandom(16)
 
 
 @app.route("/")
@@ -167,6 +168,21 @@ def create_card():
     except TypeError:
         order = 0
     data_handler.create_card(data, column_id, order)
+
+
+@app.route('/card/<int:card_id>/position', methods=['POST'])
+@json_response
+def change_card_position(card_id):
+    board_id = request.get_json()['boardId']
+    status_id = request.get_json()['columnId']
+    orders = request.get_json()['orders']
+    cards_id = request.get_json()['cardsId']
+
+    data_handler.update_card_status(card_id, board_id, status_id)
+    for index in range(len(orders)):
+        data_handler.update_cards_order(cards_id[index], orders[index])
+
+    return 'Card position stored'
 
 
 def main():

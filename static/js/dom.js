@@ -14,6 +14,7 @@ export let dom = {
         let newBoard = document.getElementById("new-board")
         newBoard.addEventListener("click", this.createNewBoard );
 
+        dom.loadBoards()
         setTimeout(dom.renameStatus, 1000)
         setTimeout(dom.renameCards, 1000)
 
@@ -21,11 +22,12 @@ export let dom = {
 
     // BOARD FUNCTIONS
 
-    loadBoards: function () {
+    loadBoards: async function () {
         // retrieves boards and makes showBoards called
-        dataHandler.getBoards(function(boards){
+        await dataHandler.getBoards(function(boards){
             dom.showBoards(boards);
         });
+        await this.initDragAndDrop();
     },
     showBoards: function (boards) {
 
@@ -205,10 +207,9 @@ export let dom = {
         let showCard = ""
         for (let card of cards){
             showCard += `
-                        <div class="card">
+                        <div class="card" id="card-${card.id}" draggable="true">
                             <div class="card-remove" id="delete-card-${card.id}"><i class="fas fa-trash-alt"></i></div>
                             <div class="card-title" data-id="${card.id}">${card.title}</div>
-                            <div class="card-remove"><i class="fas fa-trash-alt"></i></div>
                         </div>            `
         }
         let cardContainer = document.getElementById("cardholder-"+column_id)
@@ -252,11 +253,84 @@ export let dom = {
             console.log('Card is not deleted')
         }
     },
+
+    initDragAndDrop: async function () {
+        await this.wait(1000);
+        const draggableCards = document.querySelectorAll('.card');
+        const cardContainers = document.querySelectorAll('.board-column-content');
+
+        draggableCards.forEach(draggableCard => {
+            draggableCard.addEventListener('dragstart', () => {
+                draggableCard.classList.add('dragging')
+            })
+
+            draggableCard.addEventListener('dragend', () => {
+                draggableCard.classList.remove('dragging')
+            })
+        })
+
+        cardContainers.forEach(column => {
+            column.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                const afterElement = getDragAfterElement(column, event.clientY);
+                console.log(afterElement)
+                const draggedCard = document.querySelector('.dragging');
+
+                if (afterElement == null) {
+                    column.appendChild(draggedCard);
+                } else {
+                    column.insertBefore(draggedCard, afterElement)
+                }
+            })
+
+            column.addEventListener('drop', (event) => {
+                const draggedCard = document.querySelector('.dragging');
+
+                const idIndex = 1;
+                const draggedCardId = draggedCard.id.split('-')[idIndex]
+                const columnId = column.id.split('-')[idIndex]
+                const boardId = column.parentElement.parentElement.id.split('-')[idIndex]
+                const columnCards = column.children
+                let cardsId = []
+                let orders = []
+                for (let [key, values] of Object.entries(columnCards)) {
+                    orders.push(parseInt(key))
+                    cardsId.push(parseInt(values.id.split('-')[idIndex]))
+                }
+                console.log(orders, cardsId)
+
+                dataHandler.changeCardStatus(draggedCardId, boardId, columnId, orders, cardsId, (response) => {
+                    console.log(response)
+                })
+            })
+        })
+
+        function getDragAfterElement(container, y) {
+            const draggableCards = [...container.querySelectorAll('.card:not(.dragging)')]
+
+            return draggableCards.reduce((closestElement, containerChild) => {
+                const card = containerChild.getBoundingClientRect();
+                const offset = y - card.top - card.height / 2;
+                if (offset < 0 && offset > closestElement.offset) {
+                    return { offset: offset, element: containerChild}
+                } else {
+                    return closestElement
+                }
+            }, {offset: Number.NEGATIVE_INFINITY}).element
+        }
+
+    },
     createCard: function (board_id){
         dataHandler.createNewCard(board_id, function (cards) {
             dom.loadCards();
         })
-    }
+    },
+
+    wait: async function (ms) {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms)
+        })
+    },
 
 
     // here comes more features

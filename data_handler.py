@@ -136,6 +136,42 @@ def delete_item_by_id(cursor: RealDictCursor, table_name: str, id: int):
 
 
 @database_common.connection_handler
+def update_card_status(cursor: RealDictCursor, id: int, board_id: int, status_id: int):
+    query = sql.SQL("""
+        UPDATE cards
+        SET 
+            board_id = %(board_id)s,
+            status_id = %(status_id)s
+        WHERE id = %(id)s
+    """).format()
+
+    dictionary = {
+        'board_id': board_id,
+        'status_id': status_id,
+        'id': id
+    }
+
+    cursor.execute(query, dictionary)
+
+
+@database_common.connection_handler
+def update_cards_order(cursor: RealDictCursor, card_id: int, order: int):
+    query = sql.SQL("""
+            UPDATE cards
+            SET 
+                "order" = %(order)s
+            WHERE id = %(card_id)s
+        """).format()
+
+    dictionary = {
+        'order': order,
+        'card_id': card_id,
+    }
+
+    cursor.execute(query, dictionary)
+
+
+@database_common.connection_handler
 def registration(cursor: RealDictCursor, username, password):
     query = """INSERT INTO users (user_name, password, registration_date)
                VALUES (%(email)s, %(pw)s , NOW()::timestamp(0));

@@ -101,6 +101,18 @@ export let dataHandler = {
             callback(response)
         })
     },
+
+    changeCardStatus: function (cardId, boardId, columnId, orders, cardsId, callback) {
+        let data = {
+            boardId: boardId,
+            columnId: columnId,
+            orders: orders,
+            cardsId: cardsId,
+        }
+        this._api_post(`/card/${cardId}/position`, data,(response) => {
+            callback(response)
+        })
+    },
     // here comes more features
     renameBoard: function (board_id, data, callback){
         this._api_post("/rename/"+board_id, data, (response) =>{

@@ -143,3 +143,7 @@ section.board{
 .btnbtn {
     margin: 10px;
 }
+
+.dragging{
+    opacity: 50%;
+}
