@@ -56,7 +56,11 @@ def create_board():
 def create_card():
     data = request.get_json()['board_id']
     column_id = data_handler.get_first_column(data)
-    data_handler.create_card(data, column_id)
+    try:
+        order = (data_handler.get_last_order(column_id))+1
+    except TypeError:
+        order = 0
+    data_handler.create_card(data, column_id, order)
 
 
 @app.route("/rename/<int:board_id>", methods=["POST"])
