@@ -251,7 +251,7 @@ export let dom = {
         } else {
             console.log('Card is not deleted')
         }
-    }
+    },
     createCard: function (board_id){
         dataHandler.createNewCard(board_id, function (cards) {
             dom.loadCards();
