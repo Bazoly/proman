@@ -133,3 +133,25 @@ def delete_item_by_id(cursor: RealDictCursor, table_name: str, id: int):
         table_name=sql.Identifier(table_name)
     )
     cursor.execute(query, {'id': id})
+
+
+@database_common.connection_handler
+def registration(cursor: RealDictCursor, username, password):
+    query = """INSERT INTO users (user_name, password, registration_date)
+               VALUES (%(email)s, %(pw)s , NOW()::timestamp(0));
+    """
+    cursor.execute(query, {'email': username, 'pw': password})
+
+
+@database_common.connection_handler
+def get_all_user_names(cursor: RealDictCursor):
+    query = 'SELECT user_name from users'
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_user_password(cursor: RealDictCursor, email):
+    query = 'SELECT password FROM USERS WHERE user_name = %(email)s'
+    cursor.execute(query, {'email': email})
+    return cursor.fetchall()

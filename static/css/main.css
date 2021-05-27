@@ -127,3 +127,19 @@ section.board{
 .card-title{
     padding-right: 16px;
 }
+
+.reg-login-btn {
+    margin: 10px;
+    text-decoration: none;
+    color: white;
+}
+
+.session-username {
+    font-weight: bold;
+    margin: 10px;
+    float: right;
+}
+
+.btnbtn {
+    margin: 10px;
+}
