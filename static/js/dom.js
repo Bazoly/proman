@@ -21,11 +21,12 @@ export let dom = {
 
     // BOARD FUNCTIONS
 
-    loadBoards: function () {
+    loadBoards: async function () {
         // retrieves boards and makes showBoards called
-        dataHandler.getBoards(function(boards){
+        await dataHandler.getBoards(function(boards){
             dom.showBoards(boards);
         });
+        await this.initDragAndDrop();
     },
     showBoards: function (boards) {
 
@@ -308,7 +309,7 @@ export let dom = {
             }, {offset: Number.NEGATIVE_INFINITY}).element
         }
 
-    }
+    },
     createCard: function (board_id){
         dataHandler.createNewCard(board_id, function (cards) {
             dom.loadCards();
