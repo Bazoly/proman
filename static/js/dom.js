@@ -14,6 +14,7 @@ export let dom = {
         let newBoard = document.getElementById("new-board")
         newBoard.addEventListener("click", this.createNewBoard );
 
+        dom.loadBoards()
         setTimeout(dom.renameStatus, 1000)
         setTimeout(dom.renameCards, 1000)
 
@@ -289,7 +290,16 @@ export let dom = {
                 const draggedCardId = draggedCard.id.split('-')[idIndex]
                 const columnId = column.id.split('-')[idIndex]
                 const boardId = column.parentElement.parentElement.id.split('-')[idIndex]
-                dataHandler.changeCardStatus(draggedCardId, boardId, columnId, (response) => {
+                const columnCards = column.children
+                let cardsId = []
+                let orders = []
+                for (let [key, values] of Object.entries(columnCards)) {
+                    orders.push(parseInt(key))
+                    cardsId.push(parseInt(values.id.split('-')[idIndex]))
+                }
+                console.log(orders, cardsId)
+
+                dataHandler.changeCardStatus(draggedCardId, boardId, columnId, orders, cardsId, (response) => {
                     console.log(response)
                 })
             })
@@ -314,7 +324,13 @@ export let dom = {
         dataHandler.createNewCard(board_id, function (cards) {
             dom.loadCards();
         })
-    }
+    },
+
+    wait: async function (ms) {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms)
+        })
+    },
 
 
     // here comes more features

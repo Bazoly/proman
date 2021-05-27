@@ -155,18 +155,17 @@ def update_card_status(cursor: RealDictCursor, id: int, board_id: int, status_id
 
 
 @database_common.connection_handler
-def update_cards_order(cursor: RealDictCursor, status_id: int, orders: list):
-    for order in orders:
-        query = sql.SQL("""
-                UPDATE cards
-                SET 
-                    "order" = %(order)s
-                WHERE status_id = %(status_id)s
-            """).format()
+def update_cards_order(cursor: RealDictCursor, card_id: int, order: int):
+    query = sql.SQL("""
+            UPDATE cards
+            SET 
+                "order" = %(order)s
+            WHERE id = %(card_id)s
+        """).format()
 
-        dictionary = {
-            'order': order,
-            'status_id': status_id
-        }
+    dictionary = {
+        'order': order,
+        'card_id': card_id,
+    }
 
-        cursor.execute(query, dictionary)
+    cursor.execute(query, dictionary)
