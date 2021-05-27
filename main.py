@@ -29,7 +29,8 @@ def login():
         password = request.form['password']
         hashed_password = password_hash.hash_password(password)
         if user_name in [value['user_name'] for value in data_handler.get_all_user_names()]:
-            is_matching = password_hash.verify_password(password, data_handler.get_user_password(user_name)[0]['password'])
+            is_matching = password_hash.verify_password(password,
+                                                        data_handler.get_user_password(user_name)[0]['password'])
             if is_matching:
                 session['username'] = user_name
                 session['password'] = password
@@ -114,11 +115,11 @@ def rename_board(board_id):
 @app.route("/column/<int:status_id>", methods=["POST"])
 @json_response
 def rename_status(status_id):
-    #status_id = request.get_json()["status_id"]
+    # status_id = request.get_json()["status_id"]
     #
     # print(status_id)
     new_status = request.get_json()['title']
-    #status_id = data['status_id']
+    # status_id = data['status_id']
     print(new_status)
     data_handler.rename_status(new_status, status_id)
 
@@ -164,7 +165,7 @@ def create_card():
     data = request.get_json()['board_id']
     column_id = data_handler.get_first_column(data)
     try:
-        order = (data_handler.get_last_order(column_id))+1
+        order = (data_handler.get_last_order(column_id)) + 1
     except TypeError:
         order = 0
     data_handler.create_card(data, column_id, order)

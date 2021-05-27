@@ -1,5 +1,5 @@
 // It uses data_handler.js to visualize elements
-import { dataHandler } from "./data_handler.js";
+import {dataHandler} from "./data_handler.js";
 
 export let dom = {
     init: function () {
@@ -12,7 +12,7 @@ export let dom = {
         let body = document.querySelector("body");
         body.insertBefore(createNewBoardButton, boardContainer);
         let newBoard = document.getElementById("new-board")
-        newBoard.addEventListener("click", this.createNewBoard );
+        newBoard.addEventListener("click", dom.createNewBoard);
 
         dom.loadBoards()
         setTimeout(dom.renameStatus, 1000)
@@ -24,7 +24,7 @@ export let dom = {
 
     loadBoards: async function () {
         // retrieves boards and makes showBoards called
-        await dataHandler.getBoards(function(boards){
+        await dataHandler.getBoards(function (boards) {
             dom.showBoards(boards);
         });
         await this.initDragAndDrop();
@@ -32,10 +32,9 @@ export let dom = {
     showBoards: function (boards) {
 
 
-
         let boardList = '';
 
-        for(let board of boards){
+        for (let board of boards) {
             boardList += `
         <section class="board" id="section-board-${board.id}">
             <div class="board-header" id="boardheader-${board.id}"><span class="board-title" id="boardtitle-${board.id}">${board.title}</span>
@@ -59,17 +58,22 @@ export let dom = {
             deleteBtn.addEventListener('click', dom.initDeleteBoard);
         }
 
-        for(let board of boards) {
+        let closeBoardButtons = document.getElementsByClassName('board-toggle')
+        for (let closeBtn of closeBoardButtons) {
+            closeBtn.addEventListener('click', dom.initCloseTable);
+        }
+
+        for (let board of boards) {
             this.loadStatuses(board.id)
         }
-        for(let board of boards) {
+        for (let board of boards) {
             let boardTitle = document.getElementById(`boardtitle-${board.id}`)
             boardTitle.addEventListener('click', () => {
                 dom.renameBoard(board.id, board.title)
             })
         }
 
-        for(let board of boards) {
+        for (let board of boards) {
             let addcardbutton = document.getElementById(`boardaddcard-${board.id}`)
             addcardbutton.addEventListener('click', () => {
                 dom.createCard(board.id)
@@ -84,23 +88,27 @@ export let dom = {
         let boardId = event.currentTarget.id.split('-')[idIndex];
         if (confirm(`Are you sure you want to delete this board?`)) {
             dataHandler.deleteBoard(boardId, (response) => {
+                dom.showServerMessage(response);
                 console.log(response);
                 dom.loadBoards();
             })
         } else {
+            dom.showServerMessage('Board is not deleted')
             console.log('Board is not deleted')
         }
     },
 
     createNewBoard: function () {
         const newBoardTitle = "New Board";
-        dataHandler.createNewBoard(newBoardTitle);
-        dom.loadBoards()
+        dataHandler.createNewBoard(newBoardTitle, (response) => {
+            dom.showServerMessage(response)
+        });
+        dom.loadBoards();
     },
 
     renameBoard: function (id, title) {
-      let boardTitle = document.getElementById(`boardtitle-${id}`) ;
-      boardTitle.addEventListener('click', ()=> {
+        let boardTitle = document.getElementById(`boardtitle-${id}`);
+        boardTitle.addEventListener('click', () => {
             let boardDiv = document.getElementById(`boardheader-${id}`);
             boardDiv.removeChild(boardTitle);
             boardTitle = `<input class="board-title" id="title-${id}" value="${title}" maxlength="16">`;
@@ -114,7 +122,7 @@ export let dom = {
                 let data = {"title": title, "board_id": id};
                 dataHandler.renameBoard(id, data);
             })
-      })
+        })
 
     },
 
@@ -141,15 +149,15 @@ export let dom = {
                     </div>
                 `
         }
-            let statusContainer = document.getElementById('column-' + board_id);
-            statusContainer.innerHTML = column;
+        let statusContainer = document.getElementById('column-' + board_id);
+        statusContainer.innerHTML = column;
 
         let deleteColumnButtons = document.getElementsByClassName("column-delete");
         for (let deleteBtn of deleteColumnButtons) {
             deleteBtn.addEventListener('click', dom.initDeleteColumn);
         }
 
-        for(let status of statuses) {
+        for (let status of statuses) {
             this.loadCards(status.id)
         }
 
@@ -170,7 +178,10 @@ export let dom = {
                         //console.log(statusId)
                         let data = {"title": renamedStatus};
                         console.log(data)
-                        dataHandler.renameStatus(statusId, data, (response) => {console.log(response)})
+                        dataHandler.renameStatus(statusId, data, (response) => {
+                            dom.showServerMessage(response);
+                            console.log(response)
+                        })
                     }
                 })
             })
@@ -185,10 +196,12 @@ export let dom = {
         let columnId = event.currentTarget.id.split('-')[idIndex];
         if (confirm(`Are you sure you want to delete this column?`)) {
             dataHandler.deleteColumn(columnId, (response) => {
+                dom.showServerMessage(response);
                 console.log(response);
                 dom.loadBoards();
             })
         } else {
+            dom.showServerMessage('Column is not deleted')
             console.log('Column is not deleted')
         }
     },
@@ -197,22 +210,22 @@ export let dom = {
 
     loadCards: function (column_id) {
         // retrieves cards and makes showCards called
-        dataHandler.getCardsByBoardId(column_id, function (cards){
-        dom.showCards(cards, column_id)
+        dataHandler.getCardsByBoardId(column_id, function (cards) {
+            dom.showCards(cards, column_id)
         });
     },
     showCards: function (cards, column_id) {
         // shows the cards of a board
         // it adds necessary event listeners also
         let showCard = ""
-        for (let card of cards){
+        for (let card of cards) {
             showCard += `
                         <div class="card" id="card-${card.id}" draggable="true">
                             <div class="card-remove" id="delete-card-${card.id}"><i class="fas fa-trash-alt"></i></div>
                             <div class="card-title" data-id="${card.id}">${card.title}</div>
                         </div>            `
         }
-        let cardContainer = document.getElementById("cardholder-"+column_id)
+        let cardContainer = document.getElementById("cardholder-" + column_id)
         cardContainer.innerHTML = showCard;
         let deleteCardButtons = document.getElementsByClassName("card-remove");
         for (let deleteBtn of deleteCardButtons) {
@@ -234,7 +247,10 @@ export let dom = {
                         let cardId = event.target.dataset.id
                         let data = {"title": renamedCard};
                         console.log(data)
-                        dataHandler.renameCards(cardId, data, (response) => {console.log(response)})
+                        dataHandler.renameCards(cardId, data, (response) => {
+                            dom.showServerMessage(response);
+                            console.log(response)
+                        })
                     }
                 })
             })
@@ -246,10 +262,12 @@ export let dom = {
         let cardId = event.currentTarget.id.split('-')[idIndex];
         if (confirm(`Are you sure you want to delete this card?`)) {
             dataHandler.deleteCard(cardId, (response) => {
+                dom.showServerMessage(response);
                 console.log(response);
                 dom.loadBoards();
             })
         } else {
+            dom.showServerMessage('Card is not deleted');
             console.log('Card is not deleted')
         }
     },
@@ -297,9 +315,9 @@ export let dom = {
                     orders.push(parseInt(key))
                     cardsId.push(parseInt(values.id.split('-')[idIndex]))
                 }
-                console.log(orders, cardsId)
 
                 dataHandler.changeCardStatus(draggedCardId, boardId, columnId, orders, cardsId, (response) => {
+                    dom.showServerMessage(response)
                     console.log(response)
                 })
             })
@@ -312,7 +330,7 @@ export let dom = {
                 const card = containerChild.getBoundingClientRect();
                 const offset = y - card.top - card.height / 2;
                 if (offset < 0 && offset > closestElement.offset) {
-                    return { offset: offset, element: containerChild}
+                    return {offset: offset, element: containerChild}
                 } else {
                     return closestElement
                 }
@@ -320,10 +338,28 @@ export let dom = {
         }
 
     },
-    createCard: function (board_id){
+    createCard: function (board_id) {
         dataHandler.createNewCard(board_id, function (cards) {
             dom.loadCards();
         })
+    },
+
+    initCloseTable: function (event) {
+        const idIndex = 1;
+        const boardId = event.currentTarget.id.split('-')[idIndex];
+        let table = document.querySelector(`#column-${boardId}`);
+        if (table.className === 'board-columns') {
+            table.classList.add('hidden');
+        } else {
+            table.classList.remove('hidden');
+        }
+    },
+    showServerMessage: function (response) {
+        let messageContainer = document.querySelector('.message-container');
+        messageContainer.textContent = response;
+        setTimeout(() => {
+            messageContainer.textContent = null;
+        }, 2000)
     },
 
     wait: async function (ms) {

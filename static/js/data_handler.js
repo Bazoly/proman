@@ -13,21 +13,22 @@ export let dataHandler = {
             method: 'GET',
             credentials: 'same-origin'
         })
-        .then(response => response.json())  // parse the response as JSON
-        .then(json_response => callback(json_response));  // Call the `callback` with the returned object
+            .then(response => response.json())  // parse the response as JSON
+            .then(json_response => callback(json_response));  // Call the `callback` with the returned object
     },
     _api_post: function (url, data, callback) {
         // it is not called from outside
         // sends the data to the API, and calls callback function
         fetch(url, {
-        method: 'POST',
+            method: 'POST',
             credentials: 'same-origin',
             headers: {
-            'Content-Type': 'application/json'
+                'Content-Type': 'application/json'
             },
-        body: JSON.stringify(data)})
-        .then(response => response.json())  // parse the response as JSON
-        .then(json_response => callback(json_response));  // Call the `callback` with the returned object
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())  // parse the response as JSON
+            .then(json_response => callback(json_response));  // Call the `callback` with the returned object
     },
     _api_delete: function (url, callback) {
         fetch(url, {
@@ -53,7 +54,7 @@ export let dataHandler = {
         // the board is retrieved and then the callback function is called with the board
     },
     getStatuses: function (board_id, callback) {
-        this._api_get('/get-statuses/'+ board_id, (response) => {
+        this._api_get('/get-statuses/' + board_id, (response) => {
             this._data['statuses'] = response
             callback(response)
         });
@@ -65,7 +66,7 @@ export let dataHandler = {
     },
     getCardsByBoardId: function (column_id, callback) {
         // the cards are retrieved and then the callback function is called with the cards
-        this._api_get('/get-cards/'+ column_id, (response) => {
+        this._api_get('/get-cards/' + column_id, (response) => {
             this._data['cards'] = response
             callback(response)
         });
@@ -75,11 +76,11 @@ export let dataHandler = {
     },
     createNewBoard: function (boardTitle, callback) {
         // creates new board, saves it and calls the callback function with its data
-        let data = {boardTitle : "MY AWESOME NEW BOARD"};
+        let data = {boardTitle: "MY AWESOME NEW BOARD"};
         this._api_post("/create-boards", data, (response) => console.log((response)))
     },
     createNewCard: function (board_id, callback) {
-        let data =  {"board_id" : board_id};
+        let data = {"board_id": board_id};
         this._api_post("/create-card", data, (response) => {
             callback(response)
         })
@@ -109,24 +110,24 @@ export let dataHandler = {
             orders: orders,
             cardsId: cardsId,
         }
-        this._api_post(`/card/${cardId}/position`, data,(response) => {
+        this._api_post(`/card/${cardId}/position`, data, (response) => {
             callback(response)
         })
     },
     // here comes more features
-    renameBoard: function (board_id, data, callback){
-        this._api_post("/rename/"+board_id, data, (response) =>{
+    renameBoard: function (board_id, data, callback) {
+        this._api_post("/rename/" + board_id, data, (response) => {
             callback(response)
         });
 
     },
     renameStatus: function (status_id, data, callback) {
-        this._api_post("/column/"+status_id, data, (response) => {
+        this._api_post("/column/" + status_id, data, (response) => {
             callback(response)
         });
     },
     renameCards: function (card_id, data, callback) {
-        this._api_post("/card/"+card_id, data, (response) => {
+        this._api_post("/card/" + card_id, data, (response) => {
             callback(response)
         });
 
