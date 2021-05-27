@@ -78,3 +78,12 @@ def rename_board(cursor: RealDictCursor, title, board_id):
     SET title = %(title)s
     WHERE id = %(id)s'''
     cursor.execute(query, {"title": title, "id": board_id})
+
+
+@database_common.connection_handler
+def rename_status(cursor: RealDictCursor, new_status, status_id):
+    query = '''
+    UPDATE statuses
+    SET title = %(new_status)s
+    WHERE id = %(status_id)s'''
+    cursor.execute(query, {"new_status": new_status, "status_id": status_id})

@@ -58,6 +58,20 @@ def rename_board(board_id):
     data_handler.rename_board(title, board_id)
 
 
+@app.route("/column/<int:status_id>", methods=["POST"])
+@json_response
+def rename_status(status_id):
+    #status_id = request.get_json()["status_id"]
+    #
+    # print(status_id)
+    new_status = request.get_json()['title']
+    #status_id = data['status_id']
+    print(new_status)
+    data_handler.rename_status(new_status, status_id)
+
+    return "ok"
+
+
 def main():
     app.run(debug=True, port=5000)
 

@@ -13,6 +13,7 @@ export let dom = {
         body.insertBefore(createNewBoardButton, boardContainer);
         let newBoard = document.getElementById("new-board")
         newBoard.addEventListener("click", this.createNewBoard );
+        setTimeout(dom.renameStatus, 1000)
     },
 
     // BOARD FUNCTIONS
@@ -98,7 +99,7 @@ export let dom = {
         for (let status of statuses) {
             column += `
                 <div class="board-column">
-                    <div class="board-column-title">${status.title}</div>
+                    <div class="board-column-title" data-id="${status.id}">${status.title}</div>
                     <div class="board-column-content" id="cardholder-${status.id}"></div>
                     </div>
                 `
@@ -109,6 +110,30 @@ export let dom = {
             this.loadCards(status.id)
         }
 
+    },
+    renameStatus: function () {
+        let boardColumnTitles = document.getElementsByClassName("board-column-title")
+        // console.log(boardColumnTitles)
+        let counter = 0;
+        for (let title of boardColumnTitles) {
+            title.addEventListener("click", function (e) {
+                //console.log("click")
+                e.target.contentEditable = true;
+                title.addEventListener("keydown", (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault()
+                        let renamedStatus = title.innerHTML
+                        event.target.contentEditable = false;
+                        let statusId = event.target.dataset.id
+                        //console.log(renamedStatus)
+                        //console.log(statusId)
+                        let data = {"title": renamedStatus};
+                        console.log(data)
+                        dataHandler.renameStatus(statusId, data, (response) => {console.log(response)})
+                    }
+                })
+            })
+        }
     },
 
     // CARD FUNCTIONS
