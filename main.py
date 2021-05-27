@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, flash, redirect, session
 from util import json_response
 
+import os
 import json
 
 import data_handler
@@ -9,7 +10,7 @@ import password_hash
 
 app = Flask(__name__)
 
-app.secret_key = b'_5#y3L"F6Q9z\n\xec]/'
+app.secret_key = os.urandom(16)
 
 
 @app.route("/")
