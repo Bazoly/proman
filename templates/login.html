@@ -20,17 +20,23 @@
 
     </head>
     <body>
-        <div>
-            <button class="btnbtn"><a class="reg-login-btn" href="/registration">Registration</a></button>
-            {% if 'username' in session %}
-            <button class="btnbtn"><a class="reg-login-btn" href="/logout">Logout</a></button>
-            <span class="session-username">Logged in as {{ session['username'] }}</span>
-            {% else %}
-            <button class="btnbtn"><a class="reg-login-btn" href="/login">Login</a></button>
-            {% endif %}
-        </div>
-
         <h1>ProMan</h1>
-        <div id="boards">Boards are loading...</div>
+        <h1>Login</h1>
+            <form method="post">
+                <p><label class="label" for="username">E-mail:</label>
+                <p><input class="input" type=text name=username>
+                <p><label class="label" for="password">Password:</label>
+                <p><input class="input" type=password name=password>
+                <p><input type=submit value=Submit>
+            </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+                <br><br>
+            {% endif %}
+        {% endwith %}
     </body>
 </html>
