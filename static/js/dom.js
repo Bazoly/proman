@@ -59,6 +59,11 @@ export let dom = {
             deleteBtn.addEventListener('click', dom.initDeleteBoard);
         }
 
+        let closeBoardButtons = document.getElementsByClassName('board-toggle')
+        for (let closeBtn of closeBoardButtons) {
+            closeBtn.addEventListener('click', dom.initCloseTable);
+        }
+
         for(let board of boards) {
             this.loadStatuses(board.id)
         }
@@ -324,6 +329,17 @@ export let dom = {
         dataHandler.createNewCard(board_id, function (cards) {
             dom.loadCards();
         })
+    },
+
+    initCloseTable: function (event) {
+        const idIndex = 1;
+        const boardId = event.currentTarget.id.split('-')[idIndex];
+        let table = document.querySelector(`#column-${boardId}`);
+        if (table.className === 'board-columns') {
+            table.classList.add('hidden')
+        } else {
+            table.classList.remove('hidden')
+        }
     },
 
     wait: async function (ms) {
