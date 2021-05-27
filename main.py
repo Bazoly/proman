@@ -1,11 +1,15 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, flash, redirect, session
 from util import json_response
 
 import json
 
 import data_handler
 
+import password_hash
+
 app = Flask(__name__)
+
+app.secret_key = b'_5#y3L"F6Q9z\n\xec]/'
 
 
 @app.route("/")
@@ -14,6 +18,54 @@ def index():
     This is a one-pager which shows all the boards and cards
     """
     return render_template('index.html')
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        is_matching = False
+        user_name = request.form['username']
+        password = request.form['password']
+        hashed_password = password_hash.hash_password(password)
+        if user_name in [value['user_name'] for value in data_handler.get_all_user_names()]:
+            is_matching = password_hash.verify_password(password, data_handler.get_user_password(user_name)[0]['password'])
+            if is_matching:
+                session['username'] = user_name
+                session['password'] = password
+                print(user_name)
+                return redirect('/')
+            flash('Wrong username or password!')
+            return redirect(url_for('login'))
+        flash('Wrong username or password!')
+        return redirect(url_for('login'))
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    session.pop('password', None)
+    return redirect(url_for('index'))
+
+
+@app.route("/registration", methods=['GET', 'POST'])
+def registration():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username == '' or password == '':
+            flash('Please, fill in both fields.')
+            return redirect(url_for('registration'))
+
+        if username not in [value['user_name'] for value in data_handler.get_all_user_names()]:
+            hash_password = password_hash.hash_password(password)
+            data_handler.registration(username, hash_password)
+            return redirect('/')
+        else:
+            flash('Username already exists, please choose another one!')
+            return redirect(url_for('registration'))
+
+    return render_template('registration.html')
 
 
 @app.route("/get-boards")
@@ -115,13 +167,6 @@ def create_card():
     except TypeError:
         order = 0
     data_handler.create_card(data, column_id, order)
-
-
-@app.route("/rename/<int:board_id>", methods=["POST"])
-def rename_board(board_id):
-    title = request.get_json()['title']
-
-    data_handler.rename_board(title, board_id)
 
 
 def main():

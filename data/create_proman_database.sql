@@ -25,6 +25,14 @@ CREATE TABLE cards (
     "order" integer
 );
 
+DROP TABLE IF EXISTS public.users;
+CREATE TABLE users (
+    id serial NOT NULL,
+    user_name text,
+    password text,
+    registration_date timestamp without time zone
+);
+
 
 ALTER TABLE ONLY boards
     ADD CONSTRAINT pk_boards_id PRIMARY KEY (id);
@@ -44,6 +52,9 @@ ALTER TABLE ONLY cards
 
 ALTER TABLE ONLY cards
     ADD CONSTRAINT fk_status_id FOREIGN KEY (status_id) REFERENCES statuses(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT pk_user_id PRIMARY KEY (id);
 
 
 INSERT INTO boards VALUES (1, 'Board 1');
@@ -79,3 +90,6 @@ INSERT INTO cards VALUES (14, 2, 'delete column test 2', 5, 0);
 INSERT INTO cards VALUES (15, 2, 'delete column test 1', 5, 1);
 SELECT pg_catalog.setval('cards_id_seq', 15, true);
 
+
+INSERT INTO users (user_name, password, registration_date)
+VALUES ('admin@admin.com', 'admin' , NOW()::timestamp(0));
