@@ -65,7 +65,7 @@ def delete_item_by_id(cursor: RealDictCursor, table_name: str, id: int):
 
 
 @database_common.connection_handler
-def change_card_positions(cursor: RealDictCursor, id: int, board_id: int, status_id: int, order: int):
+def update_card_positions(cursor: RealDictCursor, id: int, board_id: int, status_id: int, order: int):
     query = sql.SQL("""
         UPDATE cards
         SET 
