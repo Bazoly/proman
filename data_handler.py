@@ -70,7 +70,7 @@ def update_card_status(cursor: RealDictCursor, id: int, board_id: int, status_id
         UPDATE cards
         SET 
             board_id = %(board_id)s,
-            status_id = %(status_id)s,
+            status_id = %(status_id)s
         WHERE id = %(id)s
     """).format()
 

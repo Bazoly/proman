@@ -6,12 +6,19 @@ export let dom = {
         // This function should run once, when the page is loaded.
         dom.loadBoards();
     },
-    loadBoards: function () {
+    loadBoards: async function () {
         // retrieves boards and makes showBoards called
-        dataHandler.getBoards(function(boards){
+        await dataHandler.getBoards(function(boards){
             dom.showBoards(boards);
         });
+        await dom.initDragAndDrop()
     },
+    wait: async function (ms) {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms)
+        })
+    },
+
     showBoards: function (boards) {
 
         // shows boards appending them to #boards div
@@ -149,7 +156,6 @@ export let dom = {
         for (let deleteBtn of deleteCardButtons) {
             deleteBtn.addEventListener('click', dom.initDeleteCard);
         }
-        dom.initDragAndDrop();
 
     },
     initDeleteCard: function (event) {
@@ -166,7 +172,8 @@ export let dom = {
         }
     },
 
-    initDragAndDrop: function () {
+    initDragAndDrop: async function () {
+        await this.wait(1000);
         const draggableCards = document.querySelectorAll('.card');
         const cardContainers = document.querySelectorAll('.board-column-content');
 
@@ -186,11 +193,24 @@ export let dom = {
                 const afterElement = getDragAfterElement(column, event.clientY);
                 console.log(afterElement)
                 const draggedCard = document.querySelector('.dragging');
+
                 if (afterElement == null) {
                     column.appendChild(draggedCard);
                 } else {
                     column.insertBefore(draggedCard, afterElement)
                 }
+            })
+
+            column.addEventListener('drop', (event) => {
+                const draggedCard = document.querySelector('.dragging');
+
+                const idIndex = 1;
+                const draggedCardId = draggedCard.id.split('-')[idIndex]
+                const columnId = column.id.split('-')[idIndex]
+                const boardId = column.parentElement.parentElement.id.split('-')[idIndex]
+                dataHandler.changeCardStatus(draggedCardId, boardId, columnId, (response) => {
+                    console.log(response)
+                })
             })
         })
 
@@ -207,6 +227,7 @@ export let dom = {
                 }
             }, {offset: Number.NEGATIVE_INFINITY}).element
         }
+
     }
     // here comes more features
 };

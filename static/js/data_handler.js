@@ -97,12 +97,12 @@ export let dataHandler = {
         })
     },
 
-    newCardPosition: function (cardId, boardId, columnId, callback) {
+    changeCardStatus: function (cardId, boardId, columnId, callback) {
         let data = {
             boardId: boardId,
             columnId: columnId,
         }
-        this._api_post(`/card/${cardId}/position`, data,(response) => {
+        this._api_post(`/card/${cardId}/status`, data,(response) => {
             callback(response)
         })
     }

@@ -76,13 +76,12 @@ def delete_column(column_id):
 
 @app.route('/card/<int:card_id>/status', methods=['POST'])
 @json_response
-def new_card_position(card_id):
+def change_card_status(card_id):
     board_id = request.get_json()['boardId']
     status_id = request.get_json()['columnId']
 
     data_handler.update_card_status(card_id, board_id, status_id)
-
-    return 'Card position stored'
+    return 'Card status stored'
 
 
 def main():
