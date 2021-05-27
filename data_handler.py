@@ -65,20 +65,18 @@ def delete_item_by_id(cursor: RealDictCursor, table_name: str, id: int):
 
 
 @database_common.connection_handler
-def update_card_positions(cursor: RealDictCursor, id: int, board_id: int, status_id: int, order: int):
+def update_card_status(cursor: RealDictCursor, id: int, board_id: int, status_id: int):
     query = sql.SQL("""
         UPDATE cards
         SET 
             board_id = %(board_id)s,
             status_id = %(status_id)s,
-            "order" = %(order)s,
         WHERE id = %(id)s
     """).format()
 
     dictionary = {
         'board_id': board_id,
         'status_id': status_id,
-        'order': order,
         'id': id
     }
 
