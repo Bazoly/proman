@@ -1,5 +1,8 @@
 import persistence
 from psycopg2.extras import RealDictCursor
+from psycopg2 import sql
+from typing import List, Dict
+
 import database_common
 
 
@@ -96,3 +99,14 @@ def rename_card(cursor: RealDictCursor, new_card, card_id):
     SET title = %(new_card)s
     WHERE id = %(card_id)s'''
     cursor.execute(query, {"new_card": new_card, "card_id": card_id})
+
+
+@database_common.connection_handler
+def delete_item_by_id(cursor: RealDictCursor, table_name: str, id: int):
+    query = sql.SQL("""
+        DELETE  FROM    {table_name}
+        WHERE   id = %(id)s
+    """).format(
+        table_name=sql.Identifier(table_name)
+    )
+    cursor.execute(query, {'id': id})

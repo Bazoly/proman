@@ -37,7 +37,7 @@ export let dom = {
             <div class="board-header" id="boardheader-${board.id}"><span class="board-title" id="boardtitle-${board.id}">${board.title}</span>
                 <button class="board-add" id="board-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
-                <button class="board-delete" id="board-${board.id}"><i class="fa fa-trash"></i></button>
+                <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
              
                 
             </div>
@@ -49,6 +49,12 @@ export let dom = {
 
         let boardsContainer = document.querySelector('#boards');
         boardsContainer.innerHTML = boardList;
+
+        let deleteBoardButtons = document.getElementsByClassName("board-delete");
+        for (let deleteBtn of deleteBoardButtons) {
+            deleteBtn.addEventListener('click', dom.initDeleteBoard);
+        }
+
         for(let board of boards) {
             this.loadStatuses(board.id)
         }
@@ -60,6 +66,20 @@ export let dom = {
         }
 
     },
+    initDeleteBoard: function (event) {
+        event.preventDefault();
+        const idIndex = 2;
+        let boardId = event.currentTarget.id.split('-')[idIndex];
+        if (confirm(`Are you sure you want to delete this board?`)) {
+            dataHandler.deleteBoard(boardId, (response) => {
+                console.log(response);
+                dom.loadBoards();
+            })
+        } else {
+            console.log('Board is not deleted')
+        }
+    },
+
     createNewBoard: function () {
         const newBoardTitle = "New Board";
         dataHandler.createNewBoard(newBoardTitle);
@@ -100,13 +120,23 @@ export let dom = {
         for (let status of statuses) {
             column += `
                 <div class="board-column">
-                    <div class="board-column-title" data-id="${status.id}">${status.title}</div>
+                    <div class="board-column-title" data-id="${status.id}">
+                        ${status.title}
+                        <button class="column-delete" id="delete-column-${status.id}"><i class="fa fa-trash"></i></button>
+                    </div>
                     <div class="board-column-content" id="cardholder-${status.id}"></div>
+                    
                     </div>
                 `
         }
-            let stasusContainer = document.getElementById('column-' + board_id);
-            stasusContainer.innerHTML = column;
+            let statusContainer = document.getElementById('column-' + board_id);
+            statusContainer.innerHTML = column;
+
+        let deleteColumnButtons = document.getElementsByClassName("column-delete");
+        for (let deleteBtn of deleteColumnButtons) {
+            deleteBtn.addEventListener('click', dom.initDeleteColumn);
+        }
+
         for(let status of statuses) {
             this.loadCards(status.id)
         }
@@ -137,6 +167,20 @@ export let dom = {
 
     // CARD FUNCTIONS
 
+    initDeleteColumn: function (event) {
+        event.preventDefault();
+        const idIndex = 2;
+        let columnId = event.currentTarget.id.split('-')[idIndex];
+        if (confirm(`Are you sure you want to delete this column?`)) {
+            dataHandler.deleteColumn(columnId, (response) => {
+                console.log(response);
+                dom.loadBoards();
+            })
+        } else {
+            console.log('Column is not deleted')
+        }
+    },
+
     loadCards: function (column_id) {
         // retrieves cards and makes showCards called
         dataHandler.getCardsByBoardId(column_id, function (cards){
@@ -150,12 +194,18 @@ export let dom = {
         for (let card of cards){
             showCard += `
                         <div class="card">
-                            <div class="card-remove"><i class="fas fa-trash-alt"></i></div>
+                            <div class="card-remove" id="delete-card-${card.id}"><i class="fas fa-trash-alt"></i></div>
                             <div class="card-title" data-id="${card.id}">${card.title}</div>
+                            <div class="card-remove"><i class="fas fa-trash-alt"></i></div>
                         </div>            `
         }
         let cardContainer = document.getElementById("cardholder-"+column_id)
         cardContainer.innerHTML = showCard;
+        let deleteCardButtons = document.getElementsByClassName("card-remove");
+        for (let deleteBtn of deleteCardButtons) {
+            deleteBtn.addEventListener('click', dom.initDeleteCard);
+        }
+
     },
     renameCards: function () {
         let cardTitles = document.getElementsByClassName("card-title");
@@ -176,5 +226,19 @@ export let dom = {
                 })
             })
         }
+    },
+    initDeleteCard: function (event) {
+        event.preventDefault();
+        const idIndex = 2;
+        let cardId = event.currentTarget.id.split('-')[idIndex];
+        if (confirm(`Are you sure you want to delete this card?`)) {
+            dataHandler.deleteCard(cardId, (response) => {
+                console.log(response);
+                dom.loadBoards();
+            })
+        } else {
+            console.log('Card is not deleted')
+        }
     }
+    // here comes more features
 };
