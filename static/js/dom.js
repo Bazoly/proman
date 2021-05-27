@@ -12,7 +12,7 @@ export let dom = {
         let body = document.querySelector("body");
         body.insertBefore(createNewBoardButton, boardContainer);
         let newBoard = document.getElementById("new-board")
-        newBoard.addEventListener("click", this.createNewBoard );
+        newBoard.addEventListener("click", dom.createNewBoard );
 
         dom.loadBoards()
         setTimeout(dom.renameStatus, 1000)
@@ -89,18 +89,22 @@ export let dom = {
         let boardId = event.currentTarget.id.split('-')[idIndex];
         if (confirm(`Are you sure you want to delete this board?`)) {
             dataHandler.deleteBoard(boardId, (response) => {
+                dom.showServerMessage(response);
                 console.log(response);
                 dom.loadBoards();
             })
         } else {
+            dom.showServerMessage('Board is not deleted')
             console.log('Board is not deleted')
         }
     },
 
     createNewBoard: function () {
         const newBoardTitle = "New Board";
-        dataHandler.createNewBoard(newBoardTitle);
-        dom.loadBoards()
+        dataHandler.createNewBoard(newBoardTitle, (response) => {
+            dom.showServerMessage(response)
+        });
+        dom.loadBoards();
     },
 
     renameBoard: function (id, title) {
@@ -175,7 +179,10 @@ export let dom = {
                         //console.log(statusId)
                         let data = {"title": renamedStatus};
                         console.log(data)
-                        dataHandler.renameStatus(statusId, data, (response) => {console.log(response)})
+                        dataHandler.renameStatus(statusId, data, (response) => {
+                            dom.showServerMessage(response);
+                            console.log(response)
+                        })
                     }
                 })
             })
@@ -190,10 +197,12 @@ export let dom = {
         let columnId = event.currentTarget.id.split('-')[idIndex];
         if (confirm(`Are you sure you want to delete this column?`)) {
             dataHandler.deleteColumn(columnId, (response) => {
+                dom.showServerMessage(response);
                 console.log(response);
                 dom.loadBoards();
             })
         } else {
+            dom.showServerMessage('Column is not deleted')
             console.log('Column is not deleted')
         }
     },
@@ -239,7 +248,10 @@ export let dom = {
                         let cardId = event.target.dataset.id
                         let data = {"title": renamedCard};
                         console.log(data)
-                        dataHandler.renameCards(cardId, data, (response) => {console.log(response)})
+                        dataHandler.renameCards(cardId, data, (response) => {
+                            dom.showServerMessage(response);
+                            console.log(response)
+                        })
                     }
                 })
             })
@@ -251,10 +263,12 @@ export let dom = {
         let cardId = event.currentTarget.id.split('-')[idIndex];
         if (confirm(`Are you sure you want to delete this card?`)) {
             dataHandler.deleteCard(cardId, (response) => {
+                dom.showServerMessage(response);
                 console.log(response);
                 dom.loadBoards();
             })
         } else {
+            dom.showServerMessage('Card is not deleted');
             console.log('Card is not deleted')
         }
     },
@@ -302,9 +316,9 @@ export let dom = {
                     orders.push(parseInt(key))
                     cardsId.push(parseInt(values.id.split('-')[idIndex]))
                 }
-                console.log(orders, cardsId)
 
                 dataHandler.changeCardStatus(draggedCardId, boardId, columnId, orders, cardsId, (response) => {
+                    dom.showServerMessage(response)
                     console.log(response)
                 })
             })
@@ -336,10 +350,17 @@ export let dom = {
         const boardId = event.currentTarget.id.split('-')[idIndex];
         let table = document.querySelector(`#column-${boardId}`);
         if (table.className === 'board-columns') {
-            table.classList.add('hidden')
+            table.classList.add('hidden');
         } else {
-            table.classList.remove('hidden')
+            table.classList.remove('hidden');
         }
+    },
+    showServerMessage: function (response) {
+        let messageContainer = document.querySelector('.message-container');
+        messageContainer.textContent = response;
+        setTimeout(() => {
+            messageContainer.textContent = null;
+        }, 2000)
     },
 
     wait: async function (ms) {
