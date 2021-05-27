@@ -62,7 +62,7 @@ def registration():
         if username not in [value['user_name'] for value in data_handler.get_all_user_names()]:
             hash_password = password_hash.hash_password(password)
             data_handler.registration(username, hash_password)
-            return redirect('/')
+            return redirect('/login')
         else:
             flash('Username already exists, please choose another one!')
             return redirect(url_for('registration'))
