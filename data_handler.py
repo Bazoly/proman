@@ -1,3 +1,4 @@
+import persistence
 from psycopg2.extras import RealDictCursor
 from psycopg2 import sql
 from typing import List, Dict
@@ -83,6 +84,7 @@ def rename_board(cursor: RealDictCursor, title, board_id):
 
 
 @database_common.connection_handler
+
 def create_card(cursor: RealDictCursor, board_id, column_id, order):
     query = '''
     INSERT INTO cards (board_id, status_id, title, "order")
@@ -103,6 +105,23 @@ def get_last_order(cursor: RealDictCursor, column_id):
     query = 'SELECT MAX("order") FROM cards WHERE status_id= %(column_id)s'
     cursor.execute(query, {'column_id': column_id})
     return cursor.fetchone()['max']
+
+def rename_status(cursor: RealDictCursor, new_status, status_id):
+    query = '''
+    UPDATE statuses
+    SET title = %(new_status)s
+    WHERE id = %(status_id)s'''
+    cursor.execute(query, {"new_status": new_status, "status_id": status_id})
+
+
+@database_common.connection_handler
+def rename_card(cursor: RealDictCursor, new_card, card_id):
+    query = '''
+    UPDATE cards
+    SET title = %(new_card)s
+    WHERE id = %(card_id)s'''
+    cursor.execute(query, {"new_card": new_card, "card_id": card_id})
+
 
 
 @database_common.connection_handler
