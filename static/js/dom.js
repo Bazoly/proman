@@ -139,9 +139,9 @@ export let dom = {
         for (let status of statuses) {
             column += `
                 <div class="board-column">
+                    <button class="column-delete" id="delete-column-${status.id}"><i class="fa fa-trash"></i></button>
                     <div class="board-column-title" data-id="${status.id}">
                         ${status.title}
-                        <button class="column-delete" id="delete-column-${status.id}"><i class="fa fa-trash"></i></button>
                     </div>
                     <div class="board-column-content" id="cardholder-${status.id}"></div>
                     
@@ -169,10 +169,10 @@ export let dom = {
                 title.addEventListener("keydown", (event) => {
                     if (event.key === 'Enter') {
                         event.preventDefault()
-                        let renamedStatus = title.innerHTML
+                        let renamedStatus = title.textContent
                         event.target.contentEditable = false;
                         let statusId = event.target.dataset.id
-                        let data = {"title": renamedStatus};
+                        let data = {"title": renamedStatus.trim()};
                         dataHandler.renameStatus(statusId, data, (response) => {
                             dom.showServerMessage(response);
                             console.log(response)
@@ -237,10 +237,10 @@ export let dom = {
                 cardTitle.addEventListener("keydown", (event) => {
                     if (event.key === 'Enter') {
                         event.preventDefault()
-                        let renamedCard = cardTitle.innerHTML
+                        let renamedCard = cardTitle.textContent
                         event.target.contentEditable = false;
                         let cardId = event.target.dataset.id
-                        let data = {"title": renamedCard};
+                        let data = {"title": renamedCard.trim()};
                         dataHandler.renameCards(cardId, data, (response) => {
                             dom.showServerMessage(response);
                             console.log(response)

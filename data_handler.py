@@ -105,7 +105,7 @@ def get_last_order(cursor: RealDictCursor, column_id):
     cursor.execute(query, {'column_id': column_id})
     return cursor.fetchone()['max']
 
-
+@database_common.connection_handler
 def rename_status(cursor: RealDictCursor, new_status, status_id):
     query = '''
     UPDATE statuses
