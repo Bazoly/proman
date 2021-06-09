@@ -1,0 +1,87 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:400,300);
+/*** Import Fonts ***/
+/*** Variables ***/
+/* -------------------------------- General Style -------------------------------- */
+html, body {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+}
+
+a {
+    color: #3c3c3c;
+}
+
+span {
+    font-size: 15px;
+}
+
+.button-row-container {
+    width: 250px;
+    height: 50px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+}
+
+/*** Navbar ***/
+.navbar-container {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    margin-right: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 100%;
+    height: 70px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 100%);
+}
+
+.nav, .navbar {
+    width: 500px;
+    margin: auto;
+    margin-top: 20px;
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    list-style: none;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+.nav a, .navbar a {
+    color: #3c3c3c;
+    text-decoration: none;
+}
+
+.nav .nav-item, .navbar .nav-item {
+    padding: 5px 0;
+}
+
+.nav .nav-item:after, .navbar .nav-item:after {
+    content: '\00a0';
+    display: block;
+    height: 1px;
+    width: 100%;
+    position: relative;
+    top: 3px;
+    background: transparent;
+    transition: top 0.3s ease-out;
+    -webkit-transition: top 0.3s ease-out;
+}
+
+.nav .nav-item:hover:after, .navbar .nav-item:hover:after {
+    top: 7px;
+    background: #3c3c3c;
+}
+
+.active:after {
+    height: 2px !important;
+    background: #e74c3c !important;
+}
