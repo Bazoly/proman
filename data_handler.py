@@ -33,7 +33,13 @@ def get_cards_for_board(cursor: RealDictCursor, column_id):
 
 @database_common.connection_handler
 def get_boards_sql(cursor: RealDictCursor):
-    query = 'SELECT id, title from boards ORDER BY id ASC'
+    query = '''
+    SELECT b.id, b.title, bu.is_private AS is_private, u.user_name AS user
+    FROM boards b
+    LEFT JOIN boards_users bu on b.id = bu.board_id
+    LEFT JOIN users u on bu.user_id = u.id
+    ORDER BY id ASC
+    '''
     cursor.execute(query)
     return cursor.fetchall()
 

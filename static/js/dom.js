@@ -30,19 +30,19 @@ export let dom = {
         await this.initDragAndDrop();
     },
     showBoards: function (boards) {
-
-
         let boardList = '';
 
         for (let board of boards) {
+            let userSpan;
+            board.user ? userSpan = `<span class="board-user">${board.user}</span>` : userSpan = '';
             boardList += `
         <section class="board" id="section-board-${board.id}">
-            <div class="board-header" id="boardheader-${board.id}"><span class="board-title" id="boardtitle-${board.id}">${board.title}</span>
+            <div class="board-header" id="boardheader-${board.id}">
+                <span class="board-title" id="boardtitle-${board.id}">${board.title}</span>
+                ${userSpan}
                 <button class="board-add" id="boardaddcard-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
                 <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
-             
-                
             </div>
             <div class="board-columns" id="column-${board.id}"></div>
         
