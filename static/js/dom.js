@@ -22,12 +22,11 @@ export let dom = {
 
     // BOARD FUNCTIONS
 
-    loadBoards: async function () {
+    loadBoards: function () {
         // retrieves boards and makes showBoards called
-        await dataHandler.getBoards(function (boards) {
+         dataHandler.getBoards(function (boards) {
             dom.showBoards(boards);
         });
-        await this.initDragAndDrop();
     },
     showBoards: function (boards) {
 
@@ -166,7 +165,6 @@ export let dom = {
         let boardColumnTitles = document.getElementsByClassName("board-column-title")
         for (let title of boardColumnTitles) {
             title.addEventListener("click", function (e) {
-                //console.log("click")
                 e.target.contentEditable = true;
                 title.addEventListener("keydown", (event) => {
                     if (event.key === 'Enter') {
@@ -174,10 +172,7 @@ export let dom = {
                         let renamedStatus = title.innerHTML
                         event.target.contentEditable = false;
                         let statusId = event.target.dataset.id
-                        //console.log(renamedStatus)
-                        //console.log(statusId)
                         let data = {"title": renamedStatus};
-                        console.log(data)
                         dataHandler.renameStatus(statusId, data, (response) => {
                             dom.showServerMessage(response);
                             console.log(response)
@@ -211,7 +206,8 @@ export let dom = {
     loadCards: function (column_id) {
         // retrieves cards and makes showCards called
         dataHandler.getCardsByBoardId(column_id, function (cards) {
-            dom.showCards(cards, column_id)
+            dom.showCards(cards, column_id);
+            dom.initDragAndDrop();
         });
     },
     showCards: function (cards, column_id) {
@@ -235,7 +231,6 @@ export let dom = {
     },
     renameCards: function () {
         let cardTitles = document.getElementsByClassName("card-title");
-        console.log(cardTitles)
         for (let cardTitle of cardTitles) {
             cardTitle.addEventListener("click", function (e) {
                 e.target.contentEditable = true;
@@ -246,7 +241,6 @@ export let dom = {
                         event.target.contentEditable = false;
                         let cardId = event.target.dataset.id
                         let data = {"title": renamedCard};
-                        console.log(data)
                         dataHandler.renameCards(cardId, data, (response) => {
                             dom.showServerMessage(response);
                             console.log(response)
@@ -272,10 +266,10 @@ export let dom = {
         }
     },
 
-    initDragAndDrop: async function () {
-        await this.wait(1000);
+    initDragAndDrop: function () {
         const draggableCards = document.querySelectorAll('.card');
         const cardContainers = document.querySelectorAll('.board-column-content');
+        console.log(draggableCards)
 
         draggableCards.forEach(draggableCard => {
             draggableCard.addEventListener('dragstart', () => {
