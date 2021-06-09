@@ -7,8 +7,6 @@ export let dom = {
         dom.initCreateNewBoardButton();
 
         dom.loadBoards()
-        setTimeout(dom.renameStatus, 1000)
-        setTimeout(dom.renameCards, 1000)
 
     },
 
@@ -136,7 +134,8 @@ export let dom = {
 
     loadStatuses: function (board_id) {
         dataHandler.getStatuses(board_id, function (statuses) {
-            dom.showStatuses(statuses, board_id)
+            dom.showStatuses(statuses, board_id);
+            dom.renameStatus();
         });
 
 
@@ -214,6 +213,7 @@ export let dom = {
         // retrieves cards and makes showCards called
         dataHandler.getCardsByBoardId(column_id, function (cards) {
             dom.showCards(cards, column_id);
+            dom.renameCards();
             dom.initDragAndDrop();
         });
     },
