@@ -4,6 +4,17 @@ import {dataHandler} from "./data_handler.js";
 export let dom = {
     init: function () {
         // This function should run once, when the page is loaded.
+        dom.initCreateNewBoardButton();
+
+        dom.loadBoards()
+        setTimeout(dom.renameStatus, 1000)
+        setTimeout(dom.renameCards, 1000)
+
+    },
+
+    // BOARD FUNCTIONS
+
+    initCreateNewBoardButton: function () {
         let boardContainer = document.getElementById("boards")
         boardContainer.innerHTML = null
         const createNewBoardButton = document.createElement("button");
@@ -13,14 +24,7 @@ export let dom = {
         body.insertBefore(createNewBoardButton, boardContainer);
         let newBoard = document.getElementById("new-board")
         newBoard.addEventListener("click", dom.createNewBoard);
-
-        dom.loadBoards()
-        setTimeout(dom.renameStatus, 1000)
-        setTimeout(dom.renameCards, 1000)
-
     },
-
-    // BOARD FUNCTIONS
 
     loadBoards: function () {
         // retrieves boards and makes showBoards called
