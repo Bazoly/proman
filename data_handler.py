@@ -45,12 +45,25 @@ def get_boards_sql(cursor: RealDictCursor):
 
 
 @database_common.connection_handler
-def create_new_board(cursor: RealDictCursor, board_name):
+def create_new_board(cursor: RealDictCursor, board_name, user_name):
     query = """
     INSERT INTO boards (title)
-    VALUES (%(board_name)s)
+    VALUES (%(board_name)s);
     """
-    cursor.execute(query, {'board_name': board_name})
+
+    if user_name:
+        query += """
+    INSERT INTO boards_users
+    SELECT max(b.id), c.id, true
+    FROM boards b
+    LEFT JOIN (
+        SELECT *
+        FROM users
+        WHERE user_name LIKE %(user_name)s
+        ) c ON true
+    GROUP BY c.id
+    """
+    cursor.execute(query, {'board_name': board_name, 'user_name': user_name})
 
 
 @database_common.connection_handler
