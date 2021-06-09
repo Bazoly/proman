@@ -36,7 +36,7 @@ export let dom = {
         for (let board of boards) {
             boardList += `
         <section class="board" id="section-board-${board.id}">
-            <div class="board-header" id="boardheader-${board.id}"><span class="board-title" id="boardtitle-${board.id}">${board.title}</span>
+            <div class="board-header" id="boardheader-${board.id}"><span class="board-title" id="boardtitle-${board.id}" data-id="${board.id}">${board.title}</span>
                 <button class="board-add" id="boardaddcard-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
                 <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
@@ -106,22 +106,25 @@ export let dom = {
     },
 
     renameBoard: function (id, title) {
-        let boardTitle = document.getElementById(`boardtitle-${id}`);
-        boardTitle.addEventListener('click', () => {
-            let boardDiv = document.getElementById(`boardheader-${id}`);
-            boardDiv.removeChild(boardTitle);
-            boardTitle = `<input class="board-title" id="title-${id}" value="${title}" maxlength="16">`;
-            boardDiv.insertAdjacentHTML("afterbegin", boardTitle);
-            let inputField = document.getElementById(`title-${id}`);
-            inputField.addEventListener('focusout', () => {
-                let title = document.getElementById(`title-${id}`).value;
-                if (title === '') {
-                    title = 'unnamed'
-                }
-                let data = {"title": title, "board_id": id};
-                dataHandler.renameBoard(id, data);
+        let boardTitle = document.getElementsByClassName("board-title")
+        for (let title of boardTitle) {
+            title.addEventListener("click", function (e) {
+                e.target.contentEditable = true;
+                title.addEventListener("keydown", (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault()
+                        let renamedBoard = title.textContent
+                        event.target.contentEditable = false;
+                        let boardId = event.target.dataset.id
+                        let data = {"title": renamedBoard.trim()};
+                        dataHandler.renameBoard(boardId, data, (response) => {
+                            dom.showServerMessage(response);
+                            console.log(response)
+                        })
+                    }
+                })
             })
-        })
+        }
 
     },
 

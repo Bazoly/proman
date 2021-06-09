@@ -106,10 +106,14 @@ def create_board():
 
 
 @app.route("/rename/<int:board_id>", methods=["POST"])
+@json_response
 def rename_board(board_id):
     title = request.get_json()['title']
+    print(title, board_id)
 
     data_handler.rename_board(title, board_id)
+
+    return "Board renamed"
 
 
 @app.route("/column/<int:status_id>", methods=["POST"])
@@ -119,7 +123,7 @@ def rename_status(status_id):
     print(status_id)
     data_handler.rename_status(new_status, status_id)
 
-    return "status renamed"
+    return "Status renamed"
 
 
 @app.route("/card/<int:card_id>", methods=["POST"])
@@ -128,7 +132,7 @@ def rename_card(card_id):
     new_card = request.get_json()['title']
     data_handler.rename_card(new_card, card_id)
 
-    return "card renamed"
+    return "Card renamed"
 
 
 @app.route('/board/<int:board_id>', methods=['DELETE'])
