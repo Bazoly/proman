@@ -157,6 +157,16 @@ def delete_column(column_id):
     return 'Column deleted'
 
 
+@app.route("/create-column", methods=["POST"])
+@json_response
+def create_column():
+    board_id = request.get_json()['board_id']
+    title = request.get_json()['title']
+    data_handler.create_column(board_id, title)
+
+    return "New status saved"
+
+
 @app.route("/create-card", methods=["POST"])
 @json_response
 def create_card():

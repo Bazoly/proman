@@ -39,11 +39,10 @@ export let dom = {
             boardList += `
         <section class="board" id="section-board-${board.id}">
             <div class="board-header" id="boardheader-${board.id}"><span class="board-title" id="boardtitle-${board.id}" data-id="${board.id}">${board.title}</span>
+                <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
+                <button class="board-add" id="boardaddcolumn-${board.id}">Add Status</button>
                 <button class="board-add" id="boardaddcard-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
-                <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
-             
-                
             </div>
             <div class="board-columns" id="column-${board.id}"></div>
         
@@ -67,11 +66,14 @@ export let dom = {
         for (let board of boards) {
             dom.loadStatuses(board.id);
 
-            let boardTitle = document.getElementById(`boardtitle-${board.id}`)
+            let boardTitle = document.getElementById(`boardtitle-${board.id}`);
             boardTitle.addEventListener('click', dom.renameBoard);
 
-            let addcardbutton = document.getElementById(`boardaddcard-${board.id}`)
-            addcardbutton.addEventListener('click', dom.createCard)
+            let addCardButton = document.getElementById(`boardaddcard-${board.id}`);
+            addCardButton.addEventListener('click', dom.createCard);
+
+            let addColumnButton = document.getElementById(`boardaddcolumn-${board.id}`)
+            addColumnButton.addEventListener('click', dom.createColumn)
         }
 
 
@@ -343,6 +345,27 @@ export let dom = {
         }
 
     },
+    createColumn: function (event) {
+        const idIndex = 1
+        let createColumn = event.currentTarget;
+        let boardId = createColumn.id.split('-')[idIndex]
+        let input = document.createElement('input');
+        createColumn.parentElement.replaceChild(input, createColumn);
+        input.type = 'text';
+        input.placeholder = "New Status";
+        input.required;
+        input.addEventListener("keydown", (ev) => {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                let newColumnTitle = input.value;
+                dataHandler.createNewColumn(boardId, newColumnTitle, (response) => {
+                    dom.loadBoards();
+                    dom.showServerMessage(response);
+                })
+            }
+        })
+    },
+
     createCard: function (event) {
         const idIndex = 1
         let createCard = event.currentTarget;
@@ -362,7 +385,6 @@ export let dom = {
                 })
             }
         })
-
     },
 
     initCloseTable: function (event) {

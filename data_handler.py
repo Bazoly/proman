@@ -84,12 +84,19 @@ def rename_board(cursor: RealDictCursor, title, board_id):
 
 
 @database_common.connection_handler
+def create_column(cursor: RealDictCursor, board_id, title):
+    query = '''
+    INSERT INTO statuses (board_id, title)
+    VALUES (%(board_id)s, %(title)s)'''
+    cursor.execute(query, {"board_id": board_id, "title": title})
+
+
+@database_common.connection_handler
 def create_card(cursor: RealDictCursor, board_id, column_id, title, order):
     query = '''
     INSERT INTO cards (board_id, status_id, title, "order")
     VALUES (%(board_id)s, %(column_id)s, %(title)s, %(order)s)'''
     cursor.execute(query, {"board_id": board_id, "column_id": column_id, "title": title, 'order': order})
-    return None
 
 
 @database_common.connection_handler

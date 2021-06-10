@@ -91,6 +91,16 @@ export let dataHandler = {
         })
         // creates new card, saves it and calls the callback function with its data
     },
+    createNewColumn: function (board_id, columnTitle, callback) {
+        let data = {
+            "board_id": board_id,
+            "title": columnTitle
+        };
+        this._api_post("/create-column", data, (response) => {
+            callback(response)
+        })
+        // creates new column, saves it and calls the callback function with its data
+    },
 
     deleteBoard: function (boardId, callback) {
         this._api_delete(`/board/${boardId}`, (response) => {
