@@ -99,7 +99,13 @@ def get_cards_for_board(column_id: int):
 @json_response
 def create_board():
     board_name = request.get_json()['boardTitle']
-    data_handler.create_new_board(board_name)
+
+    try:
+        user = session['username']
+    except KeyError:
+        user = None
+
+    data_handler.create_new_board(board_name, user)
     board_id = data_handler.get_board_id()
     data_handler.append_status_columns(board_id)
     return "New board created"
