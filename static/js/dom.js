@@ -38,11 +38,11 @@ export let dom = {
             board.user ? userSpan = `<span class="board-user">${board.user}</span>` : userSpan = '';
             boardList += `
         <section class="board" id="section-board-${board.id}">
-            <div class="board-header" id="boardheader-${board.id}"><span class="board-title" id="boardtitle-${board.id}" data-id="${board.id}">${board.title}</span>
-                <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
-                <button class="board-add" id="boardaddcolumn-${board.id}">Add Status</button>
+            <div class="board-header" id="boardheader-${board.id}">
                 <span class="board-title" id="boardtitle-${board.id}">${board.title}</span>
                 ${userSpan}
+                <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
+                <button class="board-add" id="boardaddcolumn-${board.id}">Add Status</button>
                 <button class="board-add" id="boardaddcard-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
             </div>
@@ -109,10 +109,11 @@ export let dom = {
                 let newBoardTitle = input.value;
                 if (newBoardTitle.length === 0) {
                     alert('You have to add a title')
-                    dom.loadBoards();
+                    dom.init();
                 } else {
                     dataHandler.createNewBoard(newBoardTitle, (response) => {
-                        dom.loadBoards();
+                        input.remove();
+                        dom.init();
                         dom.showServerMessage(response)
                     });
                 }

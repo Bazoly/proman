@@ -35,10 +35,10 @@
         <h1>ProMan</h1>
         <h1>Login</h1>
         <p><label class="label" for="username">E-mail:</label>
-        <p><input class="input" type=text name=username>
+        <p><input class="login-input"  type=text name=username>
         <p><label class="label" for="password">Password:</label>
-        <p><input class="input" type=password name=password>
-        <p><input type=submit value=Submit></p>
+        <p><input class="login-input"  type=password name=password>
+        <p><input class="login-input"  type=submit value=Submit></p>
         <p class="response">{% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
