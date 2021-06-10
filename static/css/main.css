@@ -76,6 +76,7 @@ section.board {
 }
 
 .board-column {
+    position: relative;
     padding: 10px;
     flex: 1;
 }
@@ -94,6 +95,15 @@ section.board {
 
 .board-column-title {
     text-align: center;
+}
+
+.column-delete{
+    display: block;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 12px;
+    cursor: pointer;
 }
 
 .card {
@@ -168,6 +178,18 @@ section.board {
     opacity: 50%;
 }
 
+.message-container{
+    text-align: center;
+    border-radius: 5px;
+    font-size: 20px;
+    height: 50px;
+    background: #fff;
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+}
+
+
 
 input:hover {
     border-bottom: 1px solid red;
@@ -178,7 +200,7 @@ input:focus {
 }
 
 
-input {
+.login-input {
     margin: 20px 0;
     padding: 10px;
     width: 90%;

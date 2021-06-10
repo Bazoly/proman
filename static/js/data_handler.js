@@ -76,15 +76,30 @@ export let dataHandler = {
     },
     createNewBoard: function (boardTitle, callback) {
         // creates new board, saves it and calls the callback function with its data
-        let data = {boardTitle: "MY AWESOME NEW BOARD"};
-        this._api_post("/create-boards", data, (response) => console.log((response)))
+        let data = {boardTitle: boardTitle};
+        this._api_post("/create-boards", data, (response) => {
+            callback(response)
+        })
     },
-    createNewCard: function (board_id, callback) {
-        let data = {"board_id": board_id};
+    createNewCard: function (board_id, cardTitle, callback) {
+        let data = {
+            "board_id": board_id,
+            "title": cardTitle
+        };
         this._api_post("/create-card", data, (response) => {
             callback(response)
         })
         // creates new card, saves it and calls the callback function with its data
+    },
+    createNewColumn: function (board_id, columnTitle, callback) {
+        let data = {
+            "board_id": board_id,
+            "title": columnTitle
+        };
+        this._api_post("/create-column", data, (response) => {
+            callback(response)
+        })
+        // creates new column, saves it and calls the callback function with its data
     },
 
     deleteBoard: function (boardId, callback) {

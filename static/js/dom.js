@@ -4,6 +4,15 @@ import {dataHandler} from "./data_handler.js";
 export let dom = {
     init: function () {
         // This function should run once, when the page is loaded.
+        dom.initCreateNewBoardButton();
+
+        dom.loadBoards()
+
+    },
+
+    // BOARD FUNCTIONS
+
+    initCreateNewBoardButton: function () {
         let boardContainer = document.getElementById("boards")
         boardContainer.innerHTML = null
         const createNewBoardButton = document.createElement("button");
@@ -13,21 +22,13 @@ export let dom = {
         body.insertBefore(createNewBoardButton, boardContainer);
         let newBoard = document.getElementById("new-board")
         newBoard.addEventListener("click", dom.createNewBoard);
-
-        dom.loadBoards()
-        setTimeout(dom.renameStatus, 1000)
-        setTimeout(dom.renameCards, 1000)
-
     },
 
-    // BOARD FUNCTIONS
-
-    loadBoards: async function () {
+    loadBoards: function () {
         // retrieves boards and makes showBoards called
-        await dataHandler.getBoards(function (boards) {
+         dataHandler.getBoards(function (boards) {
             dom.showBoards(boards);
         });
-        await this.initDragAndDrop();
     },
     showBoards: function (boards) {
         let boardList = '';
@@ -40,9 +41,10 @@ export let dom = {
             <div class="board-header" id="boardheader-${board.id}">
                 <span class="board-title" id="boardtitle-${board.id}">${board.title}</span>
                 ${userSpan}
+                <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
+                <button class="board-add" id="boardaddcolumn-${board.id}">Add Status</button>
                 <button class="board-add" id="boardaddcard-${board.id}">Add Card</button>
                 <button class="board-toggle" id="board-${board.id}"><i class="fas fa-chevron-down"></i></button>
-                <button class="board-delete" id="delete-board-${board.id}"><i class="fa fa-trash"></i></button>
             </div>
             <div class="board-columns" id="column-${board.id}"></div>
         
@@ -64,20 +66,16 @@ export let dom = {
         }
 
         for (let board of boards) {
-            this.loadStatuses(board.id)
-        }
-        for (let board of boards) {
-            let boardTitle = document.getElementById(`boardtitle-${board.id}`)
-            boardTitle.addEventListener('click', () => {
-                dom.renameBoard(board.id, board.title)
-            })
-        }
+            dom.loadStatuses(board.id);
 
-        for (let board of boards) {
-            let addcardbutton = document.getElementById(`boardaddcard-${board.id}`)
-            addcardbutton.addEventListener('click', () => {
-                dom.createCard(board.id)
-            })
+            let boardTitle = document.getElementById(`boardtitle-${board.id}`);
+            boardTitle.addEventListener('click', dom.renameBoard);
+
+            let addCardButton = document.getElementById(`boardaddcard-${board.id}`);
+            addCardButton.addEventListener('click', dom.createCard);
+
+            let addColumnButton = document.getElementById(`boardaddcolumn-${board.id}`)
+            addColumnButton.addEventListener('click', dom.createColumn)
         }
 
 
@@ -98,31 +96,56 @@ export let dom = {
         }
     },
 
-    createNewBoard: function () {
-        const newBoardTitle = "New Board";
-        dataHandler.createNewBoard(newBoardTitle, (response) => {
-            dom.showServerMessage(response)
-        });
-        dom.loadBoards();
+    createNewBoard: function (event) {
+        let createBoard = event.currentTarget;
+        let input = document.createElement('input');
+        createBoard.parentElement.replaceChild(input, createBoard);
+        input.type = 'text';
+        input.placeholder = "New Board";
+        input.required;
+        input.addEventListener("keydown", (ev) => {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                let newBoardTitle = input.value;
+                if (newBoardTitle.length === 0) {
+                    alert('You have to add a title')
+                    dom.init();
+                } else {
+                    dataHandler.createNewBoard(newBoardTitle, (response) => {
+                        input.remove();
+                        dom.init();
+                        dom.showServerMessage(response)
+                    });
+                }
+            }
+        })
+
     },
 
-    renameBoard: function (id, title) {
-        let boardTitle = document.getElementById(`boardtitle-${id}`);
-        boardTitle.addEventListener('click', () => {
-            let boardDiv = document.getElementById(`boardheader-${id}`);
-            boardDiv.removeChild(boardTitle);
-            boardTitle = `<input class="board-title" id="title-${id}" value="${title}" maxlength="16">`;
-            boardDiv.insertAdjacentHTML("afterbegin", boardTitle);
-            let inputField = document.getElementById(`title-${id}`);
-            inputField.addEventListener('focusout', () => {
-                let title = document.getElementById(`title-${id}`).value;
-                if (title === '') {
-                    title = 'unnamed'
+    renameBoard: function (event) {
+        let boardTitle = event.currentTarget
+        boardTitle.addEventListener("click", function (e) {
+            e.target.contentEditable = true;
+            boardTitle.addEventListener("keydown", (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault()
+                    let renamedBoard = boardTitle.textContent
+                    event.target.contentEditable = false;
+                    let boardId = event.target.dataset.id
+                    let data = {"title": renamedBoard.trim()};
+                    if (data.title.length === 0) {
+                            data.title = 'UNTITLED'
+                    }
+                    dataHandler.renameBoard(boardId, data, (response) => {
+                        dom.showServerMessage(response);
+                        dom.loadBoards();
+                        console.log(response);
+                    })
+
                 }
-                let data = {"title": title, "board_id": id};
-                dataHandler.renameBoard(id, data);
             })
         })
+
 
     },
 
@@ -130,7 +153,8 @@ export let dom = {
 
     loadStatuses: function (board_id) {
         dataHandler.getStatuses(board_id, function (statuses) {
-            dom.showStatuses(statuses, board_id)
+            dom.showStatuses(statuses, board_id);
+            dom.renameStatus();
         });
 
 
@@ -140,9 +164,9 @@ export let dom = {
         for (let status of statuses) {
             column += `
                 <div class="board-column">
+                    <button class="column-delete" id="delete-column-${status.id}"><i class="fa fa-trash"></i></button>
                     <div class="board-column-title" data-id="${status.id}">
                         ${status.title}
-                        <button class="column-delete" id="delete-column-${status.id}"><i class="fa fa-trash"></i></button>
                     </div>
                     <div class="board-column-content" id="cardholder-${status.id}"></div>
                     
@@ -158,7 +182,7 @@ export let dom = {
         }
 
         for (let status of statuses) {
-            this.loadCards(status.id)
+            dom.loadCards(status.id)
         }
 
     },
@@ -166,19 +190,19 @@ export let dom = {
         let boardColumnTitles = document.getElementsByClassName("board-column-title")
         for (let title of boardColumnTitles) {
             title.addEventListener("click", function (e) {
-                //console.log("click")
                 e.target.contentEditable = true;
                 title.addEventListener("keydown", (event) => {
                     if (event.key === 'Enter') {
                         event.preventDefault()
-                        let renamedStatus = title.innerHTML
+                        let renamedStatus = title.textContent
                         event.target.contentEditable = false;
                         let statusId = event.target.dataset.id
-                        //console.log(renamedStatus)
-                        //console.log(statusId)
-                        let data = {"title": renamedStatus};
-                        console.log(data)
+                        let data = {"title": renamedStatus.trim()};
+                        if (data.title.length === 0) {
+                            data.title = 'UNTITLED'
+                        }
                         dataHandler.renameStatus(statusId, data, (response) => {
+                            dom.loadBoards();
                             dom.showServerMessage(response);
                             console.log(response)
                         })
@@ -211,7 +235,9 @@ export let dom = {
     loadCards: function (column_id) {
         // retrieves cards and makes showCards called
         dataHandler.getCardsByBoardId(column_id, function (cards) {
-            dom.showCards(cards, column_id)
+            dom.showCards(cards, column_id);
+            dom.renameCards();
+            dom.initDragAndDrop();
         });
     },
     showCards: function (cards, column_id) {
@@ -235,20 +261,22 @@ export let dom = {
     },
     renameCards: function () {
         let cardTitles = document.getElementsByClassName("card-title");
-        console.log(cardTitles)
         for (let cardTitle of cardTitles) {
             cardTitle.addEventListener("click", function (e) {
                 e.target.contentEditable = true;
                 cardTitle.addEventListener("keydown", (event) => {
                     if (event.key === 'Enter') {
                         event.preventDefault()
-                        let renamedCard = cardTitle.innerHTML
+                        let renamedCard = cardTitle.textContent
                         event.target.contentEditable = false;
                         let cardId = event.target.dataset.id
-                        let data = {"title": renamedCard};
-                        console.log(data)
+                        let data = {"title": renamedCard.trim()};
+                        if (data.title.length === 0) {
+                            data.title = 'UNTILED'
+                        }
                         dataHandler.renameCards(cardId, data, (response) => {
                             dom.showServerMessage(response);
+                            dom.loadBoards();
                             console.log(response)
                         })
                     }
@@ -272,10 +300,10 @@ export let dom = {
         }
     },
 
-    initDragAndDrop: async function () {
-        await this.wait(1000);
+    initDragAndDrop: function () {
         const draggableCards = document.querySelectorAll('.card');
         const cardContainers = document.querySelectorAll('.board-column-content');
+        console.log(draggableCards)
 
         draggableCards.forEach(draggableCard => {
             draggableCard.addEventListener('dragstart', () => {
@@ -338,9 +366,54 @@ export let dom = {
         }
 
     },
-    createCard: function (board_id) {
-        dataHandler.createNewCard(board_id, function (cards) {
-            dom.loadCards();
+    createColumn: function (event) {
+        const idIndex = 1
+        let createColumn = event.currentTarget;
+        let boardId = createColumn.id.split('-')[idIndex]
+        let input = document.createElement('input');
+        createColumn.parentElement.replaceChild(input, createColumn);
+        input.type = 'text';
+        input.placeholder = "New Status";
+        input.required;
+        input.addEventListener("keydown", (ev) => {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                let newColumnTitle = input.value;
+                if (newColumnTitle.length === 0) {
+                    alert('You have to add a title')
+                    dom.loadBoards();
+                } else {
+                    dataHandler.createNewColumn(boardId, newColumnTitle, (response) => {
+                        dom.loadBoards();
+                        dom.showServerMessage(response);
+                    })
+                }
+            }
+        })
+    },
+
+    createCard: function (event) {
+        const idIndex = 1
+        let createCard = event.currentTarget;
+        let boardId = createCard.id.split('-')[idIndex]
+        let input = document.createElement('input');
+        createCard.parentElement.replaceChild(input, createCard);
+        input.type = 'text';
+        input.placeholder = "New Card";
+        input.required;
+        input.addEventListener("keydown", (ev) => {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                let newCardTitle = input.value;
+                if (newCardTitle.length === 0) {
+                    alert('You have to add a title')
+                } else {
+                    dataHandler.createNewCard(boardId, newCardTitle, (response) => {
+                        dom.loadBoards();
+                        dom.showServerMessage(response);
+                    })
+                }
+            }
         })
     },
 
@@ -361,13 +434,6 @@ export let dom = {
             messageContainer.textContent = null;
         }, 2000)
     },
-
-    wait: async function (ms) {
-        return new Promise(resolve => {
-            setTimeout(resolve, ms)
-        })
-    },
-
 
     // here comes more features
 };

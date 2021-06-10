@@ -103,12 +103,19 @@ def rename_board(cursor: RealDictCursor, title, board_id):
 
 
 @database_common.connection_handler
-def create_card(cursor: RealDictCursor, board_id, column_id, order):
+def create_column(cursor: RealDictCursor, board_id, title):
+    query = '''
+    INSERT INTO statuses (board_id, title)
+    VALUES (%(board_id)s, %(title)s)'''
+    cursor.execute(query, {"board_id": board_id, "title": title})
+
+
+@database_common.connection_handler
+def create_card(cursor: RealDictCursor, board_id, column_id, title, order):
     query = '''
     INSERT INTO cards (board_id, status_id, title, "order")
-    VALUES (%(board_id)s, %(column_id)s, 'awesome new card', %(order)s)'''
-    cursor.execute(query, {"board_id": board_id, "column_id": column_id, 'order': order})
-    return None
+    VALUES (%(board_id)s, %(column_id)s, %(title)s, %(order)s)'''
+    cursor.execute(query, {"board_id": board_id, "column_id": column_id, "title": title, 'order': order})
 
 
 @database_common.connection_handler
@@ -124,7 +131,7 @@ def get_last_order(cursor: RealDictCursor, column_id):
     cursor.execute(query, {'column_id': column_id})
     return cursor.fetchone()['max']
 
-
+@database_common.connection_handler
 def rename_status(cursor: RealDictCursor, new_status, status_id):
     query = '''
     UPDATE statuses
