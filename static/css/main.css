@@ -161,3 +161,13 @@ section.board{
 .dragging{
     opacity: 50%;
 }
+
+.message-container{
+    margin: 13px;
+    font-size: 20px;
+    height: 50px;
+    background: #fff;
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+}

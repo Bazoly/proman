@@ -105,10 +105,15 @@ export let dom = {
             if (ev.key === 'Enter') {
                 ev.preventDefault();
                 let newBoardTitle = input.value;
-                dataHandler.createNewBoard(newBoardTitle, (response) => {
+                if (newBoardTitle.length === 0) {
+                    alert('You have to add a title')
                     dom.loadBoards();
-                    dom.showServerMessage(response)
-                });
+                } else {
+                    dataHandler.createNewBoard(newBoardTitle, (response) => {
+                        dom.loadBoards();
+                        dom.showServerMessage(response)
+                    });
+                }
             }
         })
 
@@ -125,10 +130,15 @@ export let dom = {
                     event.target.contentEditable = false;
                     let boardId = event.target.dataset.id
                     let data = {"title": renamedBoard.trim()};
+                    if (data.title.length === 0) {
+                            data.title = 'UNTITLED'
+                    }
                     dataHandler.renameBoard(boardId, data, (response) => {
                         dom.showServerMessage(response);
-                        console.log(response)
+                        dom.loadBoards();
+                        console.log(response);
                     })
+
                 }
             })
         })
@@ -185,7 +195,11 @@ export let dom = {
                         event.target.contentEditable = false;
                         let statusId = event.target.dataset.id
                         let data = {"title": renamedStatus.trim()};
+                        if (data.title.length === 0) {
+                            data.title = 'UNTITLED'
+                        }
                         dataHandler.renameStatus(statusId, data, (response) => {
+                            dom.loadBoards();
                             dom.showServerMessage(response);
                             console.log(response)
                         })
@@ -254,8 +268,12 @@ export let dom = {
                         event.target.contentEditable = false;
                         let cardId = event.target.dataset.id
                         let data = {"title": renamedCard.trim()};
+                        if (data.title.length === 0) {
+                            data.title = 'UNTILED'
+                        }
                         dataHandler.renameCards(cardId, data, (response) => {
                             dom.showServerMessage(response);
+                            dom.loadBoards();
                             console.log(response)
                         })
                     }
@@ -358,10 +376,15 @@ export let dom = {
             if (ev.key === 'Enter') {
                 ev.preventDefault();
                 let newColumnTitle = input.value;
-                dataHandler.createNewColumn(boardId, newColumnTitle, (response) => {
+                if (newColumnTitle.length === 0) {
+                    alert('You have to add a title')
                     dom.loadBoards();
-                    dom.showServerMessage(response);
-                })
+                } else {
+                    dataHandler.createNewColumn(boardId, newColumnTitle, (response) => {
+                        dom.loadBoards();
+                        dom.showServerMessage(response);
+                    })
+                }
             }
         })
     },
@@ -379,10 +402,14 @@ export let dom = {
             if (ev.key === 'Enter') {
                 ev.preventDefault();
                 let newCardTitle = input.value;
-                dataHandler.createNewCard(boardId, newCardTitle, (response) => {
-                    dom.loadBoards();
-                    dom.showServerMessage(response);
-                })
+                if (newCardTitle.length === 0) {
+                    alert('You have to add a title')
+                } else {
+                    dataHandler.createNewCard(boardId, newCardTitle, (response) => {
+                        dom.loadBoards();
+                        dom.showServerMessage(response);
+                    })
+                }
             }
         })
     },
