@@ -94,12 +94,25 @@ export let dom = {
         }
     },
 
-    createNewBoard: function () {
-        const newBoardTitle = "New Board";
-        dataHandler.createNewBoard(newBoardTitle, (response) => {
-            dom.showServerMessage(response)
-        });
-        dom.loadBoards();
+    createNewBoard: function (event) {
+        let createBoard = event.currentTarget;
+        let input = document.createElement('input');
+        createBoard.parentElement.replaceChild(input, createBoard);
+        input.type = 'text';
+        input.placeholder = "New Board";
+        input.required;
+        input.addEventListener("keydown", (ev) => {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                let newBoardTitle = input.value;
+                console.log(newBoardTitle)
+                dataHandler.createNewBoard(newBoardTitle, (response) => {
+                    dom.loadBoards();
+                    dom.showServerMessage(response)
+                });
+            }
+        })
+
     },
 
     renameBoard: function (event) {

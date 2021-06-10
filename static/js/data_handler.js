@@ -76,8 +76,10 @@ export let dataHandler = {
     },
     createNewBoard: function (boardTitle, callback) {
         // creates new board, saves it and calls the callback function with its data
-        let data = {boardTitle: "MY AWESOME NEW BOARD"};
-        this._api_post("/create-boards", data, (response) => console.log((response)))
+        let data = {boardTitle: boardTitle};
+        this._api_post("/create-boards", data, (response) => {
+            callback(response)
+        })
     },
     createNewCard: function (board_id, callback) {
         let data = {"board_id": board_id};
