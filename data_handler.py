@@ -33,18 +33,37 @@ def get_cards_for_board(cursor: RealDictCursor, column_id):
 
 @database_common.connection_handler
 def get_boards_sql(cursor: RealDictCursor):
-    query = 'SELECT id, title from boards ORDER BY id ASC'
+    query = '''
+    SELECT b.id, b.title, bu.is_private AS is_private, u.user_name AS user
+    FROM boards b
+    LEFT JOIN boards_users bu on b.id = bu.board_id
+    LEFT JOIN users u on bu.user_id = u.id
+    ORDER BY id ASC
+    '''
     cursor.execute(query)
     return cursor.fetchall()
 
 
 @database_common.connection_handler
-def create_new_board(cursor: RealDictCursor, board_name):
+def create_new_board(cursor: RealDictCursor, board_name, user_name):
     query = """
     INSERT INTO boards (title)
-    VALUES (%(board_name)s)
+    VALUES (%(board_name)s);
     """
-    cursor.execute(query, {'board_name': board_name})
+
+    if user_name:
+        query += """
+    INSERT INTO boards_users
+    SELECT max(b.id), c.id, true
+    FROM boards b
+    LEFT JOIN (
+        SELECT *
+        FROM users
+        WHERE user_name LIKE %(user_name)s
+        ) c ON true
+    GROUP BY c.id
+    """
+    cursor.execute(query, {'board_name': board_name, 'user_name': user_name})
 
 
 @database_common.connection_handler

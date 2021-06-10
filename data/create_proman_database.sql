@@ -33,6 +33,13 @@ CREATE TABLE users (
     registration_date timestamp without time zone
 );
 
+DROP TABLE IF EXISTS public.boards_users;
+CREATE TABLE boards_users (
+    board_id integer,
+    user_id integer,
+    is_private boolean
+);
+
 
 ALTER TABLE ONLY boards
     ADD CONSTRAINT pk_boards_id PRIMARY KEY (id);
@@ -55,6 +62,11 @@ ALTER TABLE ONLY cards
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT pk_user_id PRIMARY KEY (id);
+
+
+ALTER TABLE ONLY boards_users
+    ADD CONSTRAINT fk_board_id FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id);
 
 
 INSERT INTO boards VALUES (1, 'Board 1');
@@ -90,6 +102,9 @@ INSERT INTO cards VALUES (14, 2, 'delete column test 2', 9, 0);
 INSERT INTO cards VALUES (15, 2, 'delete column test 1', 9, 1);
 SELECT pg_catalog.setval('cards_id_seq', 15, true);
 
-
 INSERT INTO users (user_name, password, registration_date)
 VALUES ('admin@admin.com', 'admin' , NOW()::timestamp(0));
+INSERT INTO users (user_name, password, registration_date)
+VALUES ('krumpli@krumpli.com', '$2b$12$ZDPnkP3I2Emk.kF8yuuw0uYl9sGJQkJFybx.bRli0wwRPUcZ/BOVC', NOW()::timestamp(0));
+
+INSERT INTO boards_users VALUES (1, 2, true);
