@@ -81,8 +81,11 @@ export let dataHandler = {
             callback(response)
         })
     },
-    createNewCard: function (board_id, callback) {
-        let data = {"board_id": board_id};
+    createNewCard: function (board_id, cardTitle, callback) {
+        let data = {
+            "board_id": board_id,
+            "title": cardTitle
+        };
         this._api_post("/create-card", data, (response) => {
             callback(response)
         })

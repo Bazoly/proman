@@ -71,9 +71,7 @@ export let dom = {
             boardTitle.addEventListener('click', dom.renameBoard);
 
             let addcardbutton = document.getElementById(`boardaddcard-${board.id}`)
-            addcardbutton.addEventListener('click', () => {
-                dom.createCard(board.id)
-            })
+            addcardbutton.addEventListener('click', dom.createCard)
         }
 
 
@@ -105,7 +103,6 @@ export let dom = {
             if (ev.key === 'Enter') {
                 ev.preventDefault();
                 let newBoardTitle = input.value;
-                console.log(newBoardTitle)
                 dataHandler.createNewBoard(newBoardTitle, (response) => {
                     dom.loadBoards();
                     dom.showServerMessage(response)
@@ -346,10 +343,26 @@ export let dom = {
         }
 
     },
-    createCard: function (board_id) {
-        dataHandler.createNewCard(board_id, function (cards) {
-            dom.loadCards();
+    createCard: function (event) {
+        const idIndex = 1
+        let createCard = event.currentTarget;
+        let boardId = createCard.id.split('-')[idIndex]
+        let input = document.createElement('input');
+        createCard.parentElement.replaceChild(input, createCard);
+        input.type = 'text';
+        input.placeholder = "New Card";
+        input.required;
+        input.addEventListener("keydown", (ev) => {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                let newCardTitle = input.value;
+                dataHandler.createNewCard(boardId, newCardTitle, (response) => {
+                    dom.loadBoards();
+                    dom.showServerMessage(response);
+                })
+            }
         })
+
     },
 
     initCloseTable: function (event) {

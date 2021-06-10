@@ -160,13 +160,16 @@ def delete_column(column_id):
 @app.route("/create-card", methods=["POST"])
 @json_response
 def create_card():
-    data = request.get_json()['board_id']
-    column_id = data_handler.get_first_column(data)
+    board_id = request.get_json()['board_id']
+    title = request.get_json()['title']
+    column_id = data_handler.get_first_column(board_id)
     try:
         order = (data_handler.get_last_order(column_id)) + 1
     except TypeError:
         order = 0
-    data_handler.create_card(data, column_id, order)
+    data_handler.create_card(board_id, column_id, title, order)
+
+    return "New card saved"
 
 
 @app.route('/card/<int:card_id>/position', methods=['POST'])
