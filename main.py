@@ -34,7 +34,6 @@ def login():
             if is_matching:
                 session['username'] = user_name
                 session['password'] = password
-                print(user_name)
                 return redirect('/')
             flash('Wrong username or password!')
             return redirect(url_for('login'))
@@ -109,7 +108,6 @@ def create_board():
 @json_response
 def rename_board(board_id):
     title = request.get_json()['title']
-    print(title, board_id)
 
     data_handler.rename_board(title, board_id)
 
@@ -120,7 +118,7 @@ def rename_board(board_id):
 @json_response
 def rename_status(status_id):
     new_status = request.get_json()['title']
-    print(status_id)
+
     data_handler.rename_status(new_status, status_id)
 
     return "Status renamed"

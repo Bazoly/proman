@@ -68,9 +68,7 @@ export let dom = {
             dom.loadStatuses(board.id);
 
             let boardTitle = document.getElementById(`boardtitle-${board.id}`)
-            boardTitle.addEventListener('click', () => {
-                dom.renameBoard(board.id, board.title)
-            });
+            boardTitle.addEventListener('click', dom.renameBoard);
 
             let addcardbutton = document.getElementById(`boardaddcard-${board.id}`)
             addcardbutton.addEventListener('click', () => {
@@ -104,26 +102,25 @@ export let dom = {
         dom.loadBoards();
     },
 
-    renameBoard: function (id, title) {
-        let boardTitle = document.getElementsByClassName("board-title")
-        for (let title of boardTitle) {
-            title.addEventListener("click", function (e) {
-                e.target.contentEditable = true;
-                title.addEventListener("keydown", (event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault()
-                        let renamedBoard = title.textContent
-                        event.target.contentEditable = false;
-                        let boardId = event.target.dataset.id
-                        let data = {"title": renamedBoard.trim()};
-                        dataHandler.renameBoard(boardId, data, (response) => {
-                            dom.showServerMessage(response);
-                            console.log(response)
-                        })
-                    }
-                })
+    renameBoard: function (event) {
+        let boardTitle = event.currentTarget
+        boardTitle.addEventListener("click", function (e) {
+            e.target.contentEditable = true;
+            boardTitle.addEventListener("keydown", (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault()
+                    let renamedBoard = boardTitle.textContent
+                    event.target.contentEditable = false;
+                    let boardId = event.target.dataset.id
+                    let data = {"title": renamedBoard.trim()};
+                    dataHandler.renameBoard(boardId, data, (response) => {
+                        dom.showServerMessage(response);
+                        console.log(response)
+                    })
+                }
             })
-        }
+        })
+
 
     },
 
@@ -160,7 +157,7 @@ export let dom = {
         }
 
         for (let status of statuses) {
-            this.loadCards(status.id)
+            dom.loadCards(status.id)
         }
 
     },
