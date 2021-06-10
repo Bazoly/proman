@@ -65,16 +65,13 @@ export let dom = {
         }
 
         for (let board of boards) {
-            this.loadStatuses(board.id)
-        }
-        for (let board of boards) {
+            dom.loadStatuses(board.id);
+
             let boardTitle = document.getElementById(`boardtitle-${board.id}`)
             boardTitle.addEventListener('click', () => {
                 dom.renameBoard(board.id, board.title)
-            })
-        }
+            });
 
-        for (let board of boards) {
             let addcardbutton = document.getElementById(`boardaddcard-${board.id}`)
             addcardbutton.addEventListener('click', () => {
                 dom.createCard(board.id)
@@ -362,13 +359,6 @@ export let dom = {
             messageContainer.textContent = null;
         }, 2000)
     },
-
-    wait: async function (ms) {
-        return new Promise(resolve => {
-            setTimeout(resolve, ms)
-        })
-    },
-
 
     // here comes more features
 };
