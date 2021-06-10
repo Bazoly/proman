@@ -31,8 +31,19 @@
 <nav class="navbar-container">
     <ul class="nav navbar">
         <li class="nav-item active"><a href="/login">HOME</a></li>
+        {% if 'username' in session %}
+        <li class="nav-item"><a href="/login">{{ session['username'] }}</a></li>
+        {% else %}
         <li class="nav-item"><a href="/login">LOGIN</a></li>
+        {% endif %}
+
+        {% if 'username' in session %}
+        <li class="nav-item"><a href="/logout">LOGOUT</a></li>
+        {% else %}
         <li class="nav-item"><a href="/login">REGISTER</a></li>
+        {% endif %}
+
+
     </ul>
 </nav>
 
