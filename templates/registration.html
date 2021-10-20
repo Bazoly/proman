@@ -28,38 +28,29 @@
 
 </head>
 <body>
-<nav class="navbar-container">
-    <ul class="nav navbar">
-        <li class="nav-item active"><a href="/login">HOME</a></li>
-        {% if 'username' in session %}
-        <li class="nav-item"><a href="/login">{{ session['username'] }}</a></li>
-        {% else %}
-        <li class="nav-item"><a href="/login">LOGIN</a></li>
-        {% endif %}
+<div class="login-container">
+    <form class="login-form" method="post">
+        <h1>ProMan</h1>
+        <h1>Registration</h1>
+        <p><label class="label" for="username">E-mail:</label>
+        <p><input class="login-input" type=text name=username>
+        <p><label class="label" for="password">Password:</label>
+        <p><input class="login-input" type=password name=password>
+        <p><input type=submit value=Submit>
+        <p class="response">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+            <br><br>
+            {% endif %}
+            {% endwith %}</p>
+        <p>Go <a href="/">Home</a> or <a href="/login">Log in</a></p>
 
-        {% if 'username' in session %}
-        <li class="nav-item"><a href="/logout">LOGOUT</a></li>
-        {% else %}
-        <li class="nav-item"><a href="/login">REGISTER</a></li>
-        {% endif %}
-
-
-    </ul>
-</nav>
-
-
-<div>
-    <button class="btnbtn"><a class="reg-login-btn" href="/registration">Registration</a></button>
-    {% if 'username' in session %}
-    <button class="btnbtn"><a class="reg-login-btn" href="/logout">Logout</a></button>
-    <span class="session-username">Logged in as {{ session['username'] }}</span>
-    {% else %}
-    <button class="btnbtn"><a class="reg-login-btn" href="/login">Login</a></button>
-    {% endif %}
+    </form>
 </div>
 
-<h1>PROMAN</h1>
-<div id="boards">Boards are loading...</div>
-<div class="message-container"></div>
+
 </body>
 </html>

@@ -1,4 +1,9 @@
 import persistence
+from psycopg2.extras import RealDictCursor
+from psycopg2 import sql
+from typing import List, Dict
+
+import database_common
 
 
 def get_card_status(status_id):
@@ -19,12 +24,196 @@ def get_boards():
     return persistence.get_boards(force=True)
 
 
-def get_cards_for_board(board_id):
-    persistence.clear_cache()
-    all_cards = persistence.get_cards()
-    matching_cards = []
-    for card in all_cards:
-        if card['board_id'] == str(board_id):
-            card['status_id'] = get_card_status(card['status_id'])  # Set textual status for the card
-            matching_cards.append(card)
-    return matching_cards
+@database_common.connection_handler
+def get_cards_for_board(cursor: RealDictCursor, column_id):
+    query = 'SELECT id, title, "order" FROM cards WHERE status_id= (%(column_id)s) ORDER BY "order" ASC'
+    cursor.execute(query, {'column_id': column_id})
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_boards_sql(cursor: RealDictCursor):
+    query = '''
+    SELECT b.id, b.title, bu.is_private AS is_private, u.user_name AS user
+    FROM boards b
+    LEFT JOIN boards_users bu on b.id = bu.board_id
+    LEFT JOIN users u on bu.user_id = u.id
+    ORDER BY id ASC
+    '''
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def create_new_board(cursor: RealDictCursor, board_name, user_name):
+    query = """
+    INSERT INTO boards (title)
+    VALUES (%(board_name)s);
+    """
+
+    if user_name:
+        query += """
+    INSERT INTO boards_users
+    SELECT max(b.id), c.id, true
+    FROM boards b
+    LEFT JOIN (
+        SELECT *
+        FROM users
+        WHERE user_name LIKE %(user_name)s
+        ) c ON true
+    GROUP BY c.id
+    """
+    cursor.execute(query, {'board_name': board_name, 'user_name': user_name})
+
+
+@database_common.connection_handler
+def get_statuses(cursor: RealDictCursor, board_id):
+    query = 'SELECT id, title FROM statuses WHERE board_id= (%(board_id)s) ORDER BY id ASC'
+    cursor.execute(query, {'board_id': board_id})
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def append_status_columns(cursor: RealDictCursor, board_id):
+    query = """
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'new');
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'in progress');
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'testing');
+    INSERT INTO statuses(board_id, title) VALUES (%(board_id)s, 'done');
+    """
+    cursor.execute(query, {'board_id': board_id})
+
+
+@database_common.connection_handler
+def get_board_id(cursor: RealDictCursor):
+    query = """
+    SELECT MAX(id) FROM boards;
+    """
+    cursor.execute(query)
+    return cursor.fetchone()['max']
+
+
+@database_common.connection_handler
+def rename_board(cursor: RealDictCursor, title, board_id):
+    query = '''
+    UPDATE boards
+    SET title = %(title)s
+    WHERE id = %(id)s'''
+    cursor.execute(query, {"title": title, "id": board_id})
+
+
+@database_common.connection_handler
+def create_column(cursor: RealDictCursor, board_id, title):
+    query = '''
+    INSERT INTO statuses (board_id, title)
+    VALUES (%(board_id)s, %(title)s)'''
+    cursor.execute(query, {"board_id": board_id, "title": title})
+
+
+@database_common.connection_handler
+def create_card(cursor: RealDictCursor, board_id, column_id, title, order):
+    query = '''
+    INSERT INTO cards (board_id, status_id, title, "order")
+    VALUES (%(board_id)s, %(column_id)s, %(title)s, %(order)s)'''
+    cursor.execute(query, {"board_id": board_id, "column_id": column_id, "title": title, 'order': order})
+
+
+@database_common.connection_handler
+def get_first_column(cursor: RealDictCursor, board_id):
+    query = 'SELECT MIN(id) FROM statuses WHERE board_id = %(board_id)s'
+    cursor.execute(query, {'board_id': board_id} )
+    return cursor.fetchone()['min']
+
+
+@database_common.connection_handler
+def get_last_order(cursor: RealDictCursor, column_id):
+    query = 'SELECT MAX("order") FROM cards WHERE status_id= %(column_id)s'
+    cursor.execute(query, {'column_id': column_id})
+    return cursor.fetchone()['max']
+
+@database_common.connection_handler
+def rename_status(cursor: RealDictCursor, new_status, status_id):
+    query = '''
+    UPDATE statuses
+    SET title = %(new_status)s
+    WHERE id = %(status_id)s'''
+    cursor.execute(query, {"new_status": new_status, "status_id": status_id})
+
+
+@database_common.connection_handler
+def rename_card(cursor: RealDictCursor, new_card, card_id):
+    query = '''
+    UPDATE cards
+    SET title = %(new_card)s
+    WHERE id = %(card_id)s'''
+    cursor.execute(query, {"new_card": new_card, "card_id": card_id})
+
+
+
+@database_common.connection_handler
+def delete_item_by_id(cursor: RealDictCursor, table_name: str, id: int):
+    query = sql.SQL("""
+        DELETE  FROM    {table_name}
+        WHERE   id = %(id)s
+    """).format(
+        table_name=sql.Identifier(table_name)
+    )
+    cursor.execute(query, {'id': id})
+
+
+@database_common.connection_handler
+def update_card_status(cursor: RealDictCursor, id: int, board_id: int, status_id: int):
+    query = sql.SQL("""
+        UPDATE cards
+        SET 
+            board_id = %(board_id)s,
+            status_id = %(status_id)s
+        WHERE id = %(id)s
+    """).format()
+
+    dictionary = {
+        'board_id': board_id,
+        'status_id': status_id,
+        'id': id
+    }
+
+    cursor.execute(query, dictionary)
+
+
+@database_common.connection_handler
+def update_cards_order(cursor: RealDictCursor, card_id: int, order: int):
+    query = sql.SQL("""
+            UPDATE cards
+            SET 
+                "order" = %(order)s
+            WHERE id = %(card_id)s
+        """).format()
+
+    dictionary = {
+        'order': order,
+        'card_id': card_id,
+    }
+
+    cursor.execute(query, dictionary)
+
+
+@database_common.connection_handler
+def registration(cursor: RealDictCursor, username, password):
+    query = """INSERT INTO users (user_name, password, registration_date)
+               VALUES (%(email)s, %(pw)s , NOW()::timestamp(0));
+    """
+    cursor.execute(query, {'email': username, 'pw': password})
+
+
+@database_common.connection_handler
+def get_all_user_names(cursor: RealDictCursor):
+    query = 'SELECT user_name from users'
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_user_password(cursor: RealDictCursor, email):
+    query = 'SELECT password FROM USERS WHERE user_name = %(email)s'
+    cursor.execute(query, {'email': email})
+    return cursor.fetchall()
